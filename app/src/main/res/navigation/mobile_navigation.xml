@@ -3,23 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_cards"
+        android:name="com.example.memorybootcamp.ui.home.HomeFragment"
+        android:label="@string/menu_cards"
+        tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_home"
         android:name="com.example.memorybootcamp.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
-
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_numbers"
         android:name="com.example.memorybootcamp.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:label="@string/menu_numbers"
+        tools:layout="@layout/fragment_numbers" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
+        android:id="@+id/nav_faces"
         android:name="com.example.memorybootcamp.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:label="@string/menu_faces"
+        tools:layout="@layout/fragment_cards" />
 </navigation>

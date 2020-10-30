@@ -25,6 +25,5 @@
     </style>
 
     <style name="Theme.MemoryBootcamp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="Theme.MemoryBootcamp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
