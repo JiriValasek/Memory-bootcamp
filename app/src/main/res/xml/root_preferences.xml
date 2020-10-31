@@ -1,13 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:onClick="onOSNoticesClicked">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="@string/display_header">
 
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:persistent="true"
-            app:key="app_night_mode"
+            app:key="@string/app_night_mode_key"
             app:summaryOff="@string/app_night_mode_summary_off"
             app:summaryOn="@string/app_night_mode_summary_on"
             app:title="@string/app_night_mode"
@@ -16,7 +15,7 @@
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:persistent="true"
-            app:key="night_mode"
+            app:key="@string/night_mode_key"
             app:summaryOff="@string/night_mode_summary_off"
             app:summaryOn="@string/night_mode_summary_on"
             app:title="@string/night_mode"
@@ -28,7 +27,8 @@
 
         <Preference
             app:summary="@string/os_notices_summary"
-            app:title="@string/os_notices" />
+            app:title="@string/os_notices"
+            android:onClick="onOSNoticesClicked"/>
 
         <Preference
             app:summary="@string/about_summary"

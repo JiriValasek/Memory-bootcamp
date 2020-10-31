@@ -3,8 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_settings"
-        android:onClick="settingsClicked"
+        android:enabled="true"
+        android:onClick="onSettingsClicked"
         android:orderInCategory="100"
         android:title="@string/action_settings"
+        android:visible="true"
         app:showAsAction="never" />
 </menu>

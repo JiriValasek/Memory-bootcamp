@@ -4,8 +4,8 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Memory Bootcamp</string>
+    <string name="nav_header_subtitle">memorybootcamp@protonmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
@@ -16,15 +16,20 @@
     <string name="menu_binary_numbers">Binary numbers</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
+
+    <!-- Preferences -->
+    <string name="main_preferences_key">main_preferences</string>
     <!-- Preference Titles -->
     <string name="display_header">Display options</string>
     <string name="sync_header">Legal information</string>
 
     <!-- Display options -->
     <string name="app_night_mode">Use system night mode setting</string>
+    <string name="app_night_mode_key">app_night_mode</string>
     <string name="app_night_mode_summary_on">Memory bootcamp will use system night mode settings</string>
     <string name="app_night_mode_summary_off">Memory bootcamp will its own night mode settings</string>
     <string name="night_mode">Night mode</string>
+    <string name="night_mode_key">night_mode</string>
     <string name="night_mode_summary_on">Night mode is active</string>
     <string name="night_mode_summary_off">Night mode is inactive</string>
 
@@ -36,4 +41,5 @@
 
     <!-- FloatingActionButton -->
     <string name="fab_content_description">Start last challenge</string>
+    <string name="menu_words">Words</string>
 </resources>
