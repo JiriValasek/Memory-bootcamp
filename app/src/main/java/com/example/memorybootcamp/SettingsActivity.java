@@ -1,15 +1,14 @@
 package com.example.memorybootcamp;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.SwitchPreferenceCompat;
 
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 
@@ -37,7 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
         }
 
-        @Override
+        /*@Override
         public boolean onPreferenceTreeClick(Preference preference){
             SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.main_preferences_key),
                     Context.MODE_PRIVATE);
@@ -48,13 +47,29 @@ public class SettingsActivity extends AppCompatActivity {
                 editor.apply();
                 editor.commit();
             }
+            else if (preference instanceof ListPreference) {
+                ListPreference listPref = (ListPreference) preference;
+                editor.putString(preference.getKey(), listPref.getValue());
+                editor.apply();
+                editor.commit();
+
+            }
             return true;
-        }
+        }*/
     }
 
     public boolean onOSNoticesClicked(Preference preference){
         startActivity(new Intent(this, OssLicensesMenuActivity.class));
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

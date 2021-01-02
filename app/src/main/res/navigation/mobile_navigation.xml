@@ -6,25 +6,41 @@
     app:startDestination="@id/nav_home">
 
     <fragment
-        android:id="@+id/nav_cards"
-        android:name="com.example.memorybootcamp.ui.home.HomeFragment"
-        android:label="@string/menu_cards"
-        tools:layout="@layout/fragment_home" />
-
-    <fragment
         android:id="@+id/nav_home"
         android:name="com.example.memorybootcamp.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_cards"
+        android:name="com.example.memorybootcamp.ui.challenges.cards.CardsFragment"
+        android:label="@string/menu_cards"
+        tools:layout="@layout/fragment_challenge" />
+
     <fragment
         android:id="@+id/nav_numbers"
-        android:name="com.example.memorybootcamp.ui.gallery.GalleryFragment"
+        android:name="com.example.memorybootcamp.ui.challenges.numbers.NumbersFragment"
         android:label="@string/menu_numbers"
-        tools:layout="@layout/fragment_numbers" />
+        tools:layout="@layout/fragment_challenge" >
+    </fragment>
 
     <fragment
         android:id="@+id/nav_faces"
-        android:name="com.example.memorybootcamp.ui.slideshow.SlideshowFragment"
+        android:name="com.example.memorybootcamp.ui.challenges.faces.FacesFragment"
         android:label="@string/menu_faces"
-        tools:layout="@layout/fragment_cards" />
+        tools:layout="@layout/fragment_challenge" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_binary"
+        android:name="com.example.memorybootcamp.ui.challenges.binary.BinaryFragment"
+        android:label="@string/menu_binary_numbers"
+        tools:layout="@layout/fragment_challenge" />
+
+    <fragment
+        android:id="@+id/nav_words"
+        android:name="com.example.memorybootcamp.ui.challenges.words.WordsFragment"
+        android:label="@string/menu_words"
+        tools:layout="@layout/fragment_challenge" />
 </navigation>

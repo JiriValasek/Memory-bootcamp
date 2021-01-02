@@ -2,25 +2,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="@string/display_header">
-
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
+        <ListPreference
+            android:defaultValue="@string/night_mode_auto"
+            android:entries="@array/night_mode"
+            android:entryValues="@array/night_mode"
+            android:summary="@string/night_mode_summary"
+            android:key="@string/night_mode_key"
             android:persistent="true"
-            app:key="@string/app_night_mode_key"
-            app:summaryOff="@string/app_night_mode_summary_off"
-            app:summaryOn="@string/app_night_mode_summary_on"
-            app:title="@string/app_night_mode"
-            app:useSimpleSummaryProvider="true" />
+            android:title="@string/night_mode_title" />
+    </PreferenceCategory>
 
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:persistent="true"
-            app:key="@string/night_mode_key"
-            app:summaryOff="@string/night_mode_summary_off"
-            app:summaryOn="@string/night_mode_summary_on"
-            app:title="@string/night_mode"
-            app:useSimpleSummaryProvider="true" />
-
+    <PreferenceCategory app:title="@string/binary_header">
+        <EditTextPreference
+            android:defaultValue="@string/binary_size_default"
+            android:key="@string/binary_size_key"
+            android:title="@string/binary_size_title"/>
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/sync_header">

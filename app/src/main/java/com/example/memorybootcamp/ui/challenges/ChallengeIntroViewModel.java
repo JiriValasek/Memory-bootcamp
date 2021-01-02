@@ -1,17 +1,17 @@
-package com.example.memorybootcamp.ui.home;
+package com.example.memorybootcamp.ui.challenges;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class HomeViewModel extends ViewModel {
+public class ChallengeIntroViewModel extends ViewModel {
 
     private final MutableLiveData<String> mHeader;
     private final MutableLiveData<float[][]> scores;
 
-    public HomeViewModel() {
+    public ChallengeIntroViewModel() {
         mHeader = new MutableLiveData<>();
-        mHeader.setValue("This is home fragment");
+        mHeader.setValue("Placeholder");
         scores = new MutableLiveData<>();
     }
 
@@ -28,4 +28,5 @@ public class HomeViewModel extends ViewModel {
     public void setScores(float[][] scores) {
         this.scores.setValue(scores);
     }
+
 }

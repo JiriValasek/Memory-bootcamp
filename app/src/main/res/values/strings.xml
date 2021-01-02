@@ -14,6 +14,7 @@
     <string name="menu_numbers">Numbers</string>
     <string name="menu_faces">Faces</string>
     <string name="menu_binary_numbers">Binary numbers</string>
+    <string name="menu_words">Words</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
 
@@ -21,17 +22,30 @@
     <string name="main_preferences_key">main_preferences</string>
     <!-- Preference Titles -->
     <string name="display_header">Display options</string>
+    <string name="binary_header">Binary challenge</string>
     <string name="sync_header">Legal information</string>
 
     <!-- Display options -->
-    <string name="app_night_mode">Use system night mode setting</string>
-    <string name="app_night_mode_key">app_night_mode</string>
-    <string name="app_night_mode_summary_on">Memory bootcamp will use system night mode settings</string>
-    <string name="app_night_mode_summary_off">Memory bootcamp will its own night mode settings</string>
-    <string name="night_mode">Night mode</string>
+    <string name="night_mode_title">Night mode</string>
     <string name="night_mode_key">night_mode</string>
-    <string name="night_mode_summary_on">Night mode is active</string>
-    <string name="night_mode_summary_off">Night mode is inactive</string>
+    <string name="night_mode_summary">Memory bootcamp night mode customization</string>
+    <string name="night_mode_auto">auto</string>
+    <string name="night_mode_off">off</string>
+    <string name="night_mode_on">on</string>
+
+    <!-- Challenge screen -->
+    <string name="binary_challenge_header">Your results in binary numbers:</string>
+    <string name="numbers_challenge_header">Your results in numbers:</string>
+    <string name="words_challenge_header">Your results in words:</string>
+    <string name="faces_challenge_header">Your results in faces:</string>
+    <string name="cards_challenge_header">Your results in cards:</string>
+    <string name="home_page_header">These are your current results, finish a challenge to improve them</string>
+
+    <!-- Binary Challange -->
+    <string name="binary_size_title">Number of bits</string>
+    <string name="binary_size_key">binary_size</string>
+    <string name="binary_size_default">20</string>
+    <string name="start_binary_challange">Start training</string>
 
     <!-- Legal information -->
     <string name="os_notices">Open Source Notices</string>
@@ -41,5 +55,8 @@
 
     <!-- FloatingActionButton -->
     <string name="fab_content_description">Start last challenge</string>
-    <string name="menu_words">Words</string>
+
+    <!-- Content Descriptions -->
+    <string name="desc_bullhorn">trumpet</string>
+    <string name="desc_binary">binary number</string>
 </resources>

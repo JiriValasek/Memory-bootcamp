@@ -17,4 +17,9 @@
     <color name="green_800">#2E7D32</color>
     <color name="green_900">#1B5E20</color>
     <color name="transparent">#00000000</color>
+    <color name="graph_best_fill">#99008800</color>
+    <color name="graph_best">#FF008800</color>
+    <color name="graph_this_week_fill">#9900FF00</color>
+    <color name="graph_this_week">#FF00FF00</color>
+
 </resources>
