@@ -11,15 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MemoryBootcamp">
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
-        </activity>
-        <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/Theme.MemoryBootcamp.NoActionBar"/>
+            android:theme="@style/Theme.MemoryBootcamp.NoActionBar" />
         <activity
             android:name=".SplashActivity"
             android:label="@string/app_name"

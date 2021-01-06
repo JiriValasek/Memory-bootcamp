@@ -10,19 +10,44 @@
         android:name="com.example.memorybootcamp.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_home_to_nav_faces"
+            app:destination="@id/nav_faces" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_numbers"
+            app:destination="@id/nav_numbers" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_binary"
+            app:destination="@id/nav_binary" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_binary2"
+            app:destination="@id/nav_binary" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_cards"
+            app:destination="@id/nav_cards" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_words"
+            app:destination="@id/nav_words" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_cards"
         android:name="com.example.memorybootcamp.ui.challenges.cards.CardsFragment"
         android:label="@string/menu_cards"
-        tools:layout="@layout/fragment_challenge" />
+        tools:layout="@layout/fragment_challenge" >
+        <action
+            android:id="@+id/action_nav_cards_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_numbers"
         android:name="com.example.memorybootcamp.ui.challenges.numbers.NumbersFragment"
         android:label="@string/menu_numbers"
         tools:layout="@layout/fragment_challenge" >
+        <action
+            android:id="@+id/action_nav_numbers_to_nav_home"
+            app:destination="@id/nav_home" />
     </fragment>
 
     <fragment
@@ -30,17 +55,53 @@
         android:name="com.example.memorybootcamp.ui.challenges.faces.FacesFragment"
         android:label="@string/menu_faces"
         tools:layout="@layout/fragment_challenge" >
+        <action
+            android:id="@+id/action_nav_faces_to_nav_home"
+            app:destination="@id/nav_home" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_binary"
         android:name="com.example.memorybootcamp.ui.challenges.binary.BinaryFragment"
         android:label="@string/menu_binary_numbers"
-        tools:layout="@layout/fragment_challenge" />
+        tools:layout="@layout/fragment_challenge" >
+        <action
+            android:id="@+id/action_nav_binary_to_nav_home"
+            app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_nav_binary_to_nav_settings"
+            app:destination="@id/nav_settings" />
+        <action
+            android:id="@+id/action_nav_binary_to_binaryTrainingFragment"
+            app:destination="@id/binaryTrainingFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_words"
         android:name="com.example.memorybootcamp.ui.challenges.words.WordsFragment"
         android:label="@string/menu_words"
-        tools:layout="@layout/fragment_challenge" />
+        tools:layout="@layout/fragment_challenge" >
+        <action
+            android:id="@+id/action_nav_words_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.memorybootcamp.ui.SettingsFragment"
+        android:label="SettingsFragment">
+        <action
+            android:id="@+id/action_nav_settings_to_nav_binary"
+            app:destination="@id/nav_binary" />
+    </fragment>
+    <fragment
+        android:id="@+id/binaryTrainingFragment"
+        android:name="com.example.memorybootcamp.ui.challenges.binary.BinaryTrainingFragment"
+        android:label="fragment_binary_training"
+        tools:layout="@layout/fragment_binary_training" >
+        <action
+            android:id="@+id/action_binaryTrainingFragment_to_nav_binary"
+            app:destination="@id/nav_binary" />
+    </fragment>
 </navigation>

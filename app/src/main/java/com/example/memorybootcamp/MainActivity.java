@@ -1,9 +1,6 @@
 package com.example.memorybootcamp;
 
 import android.app.UiModeManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -12,23 +9,25 @@ import android.view.MenuItem;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
+import com.example.memorybootcamp.ui.challenges.binary.BinaryFragment;
+import com.example.memorybootcamp.ui.challenges.binary.BinaryFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
-public class MainActivity extends AppCompatActivity
-        implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private UiModeManager uiModeManager;
@@ -56,7 +55,8 @@ public class MainActivity extends AppCompatActivity
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        setupSharedPreferences();
+        // initialize preferences
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
     }
 
     @Override
@@ -84,39 +84,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void onSettingsClicked(MenuItem item){
-        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-        startActivity(intent);
-    }
-
-    private void setupSharedPreferences() {
-        SharedPreferences sharedPreferences =
-                this.getSharedPreferences(getString(R.string.main_preferences_key),Context.MODE_PRIVATE);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        // setup night mode from the shared prefs
-        onSharedPreferenceChanged(sharedPreferences,getString(R.string.night_mode_key));
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.night_mode_key))) {
-            switch (sharedPreferences.getString(getString(R.string.night_mode_key), getString(R.string.night_mode_auto))) {
-                case "off":
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    break;
-                case "on":
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    break;
-                default:
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                    break;
-            }
+        Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        Fragment currentFragment = navHostFragment == null? null : navHostFragment.getChildFragmentManager().getFragments().get(0);
+        if (currentFragment instanceof BinaryFragment){
+                NavDirections action = BinaryFragmentDirections.actionNavBinaryToNavSettings();
+                Navigation.findNavController(currentFragment.getView()).navigate(action);
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-    }
 }

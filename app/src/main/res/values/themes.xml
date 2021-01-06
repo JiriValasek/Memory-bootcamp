@@ -26,8 +26,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.MemoryBootcamp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+    <style name="Theme.MemoryBootcamp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:colorControlActivated">@color/green_500</item>
     </style>
+
     <style name="Theme.MemoryBootcamp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
