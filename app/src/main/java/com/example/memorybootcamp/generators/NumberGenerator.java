@@ -1,26 +1,17 @@
 package com.example.memorybootcamp.generators;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.ArrayList;
 
 public class NumberGenerator implements IGenerator{
 
     @Override
-    public JSONObject generateSequence(int length) {
+    public ArrayList<String> generateSequence(int length) {
 
-        JSONObject result = new JSONObject();
-        JSONArray sequence = new JSONArray();
+        final ArrayList<String> result = new ArrayList<>();
         int elem;
         for (int i = 0; i < length; i++) {
             elem = (int) Math.floor(10 * Math.random());
-            sequence.put(String.valueOf(elem));
-        }
-        try {
-            result.put("questions", sequence);
-            result.put("responses", sequence);
-        } catch (JSONException e) {
-            return null;
+            result.add(String.valueOf(elem));
         }
         return result;
     }

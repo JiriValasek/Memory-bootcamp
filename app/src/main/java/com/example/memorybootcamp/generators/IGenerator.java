@@ -1,8 +1,12 @@
 package com.example.memorybootcamp.generators;
 
-import org.json.JSONObject;
+import java.util.List;
 
 public interface IGenerator {
-    /** Generates a sequence of samples with given length*/
-    JSONObject generateSequence(int length);
+    /**
+     * Generates a sequence of samples with given length
+     */
+    default List<?> generateSequence(int length) {
+        return null;
+    }
 }

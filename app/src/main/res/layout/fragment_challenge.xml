@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- data setup -->
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.memorybootcamp.ui.challenges.ChallengeViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/challenge_layout"
+    android:id="@+id/binary_challenge_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.challenges.binary.BinaryFragment">
@@ -15,7 +23,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/placeholder"
+        android:text="@{viewModel.header}"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +56,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/placeholder"
+        android:text="@{viewModel.description}"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,10 +71,11 @@
         android:background="@android:drawable/btn_default"
         android:clickable="true"
         android:focusable="true"
+        android:enabled="@{viewModel.startChallengeAllowed}"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:text="@string/start_binary_challange"
+        android:text="@string/start_challange"
         android:layout_marginBottom="20dp"
         android:backgroundTint="?colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -89,14 +98,13 @@
             app:tint="@color/white"/>
 
         <TextView
-            android:id="@+id/tvSearchCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:gravity="center"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:text="@string/start_binary_challange"
+            android:text="@string/start_challange"
             android:textSize="20sp"
             android:textColor="@color/white"/>
 
@@ -115,3 +123,4 @@
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

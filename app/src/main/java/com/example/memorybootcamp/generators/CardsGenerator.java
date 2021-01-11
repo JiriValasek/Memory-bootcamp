@@ -1,6 +1,6 @@
 package com.example.memorybootcamp.generators;
 
-import org.json.JSONObject;
+import java.util.ArrayList;
 
 public class CardsGenerator implements IGenerator{
     /* TODO:
@@ -9,7 +9,7 @@ public class CardsGenerator implements IGenerator{
      */
 
     @Override
-    public JSONObject generateSequence(int length) {
+    public ArrayList<String> generateSequence(int length) {
         return null;
     }
 }

@@ -14,6 +14,18 @@
             android:key="@string/binary_time_key"
             android:persistent="true"
             android:title="@string/binary_time_title" />
+        <EditTextPreference
+            android:defaultValue="@string/binary_wait_default"
+            android:inputType="numberDecimal"
+            android:key="@string/binary_wait_key"
+            android:persistent="true"
+            android:title="@string/binary_wait_title" />
+        <EditTextPreference
+            android:defaultValue="@string/binary_answer_default"
+            android:inputType="numberDecimal"
+            android:key="@string/binary_answer_key"
+            android:persistent="true"
+            android:title="@string/binary_answer_title" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/sync_header">

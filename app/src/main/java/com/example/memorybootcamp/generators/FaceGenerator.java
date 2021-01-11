@@ -1,6 +1,6 @@
 package com.example.memorybootcamp.generators;
 
-import org.json.JSONObject;
+import java.util.ArrayList;
 
 public class FaceGenerator implements IGenerator{
 
@@ -23,7 +23,20 @@ public class FaceGenerator implements IGenerator{
     }
 
     @Override
-    public JSONObject generateSequence(int length) {
+    public ArrayList<Face> generateSequence(int length) {
         return null;
+    }
+
+    static public class Face {
+        private final String url;
+        private final String name;
+
+        public Face(String url, String name){
+            this.url = url;
+            this.name = name;
+        }
+
+        public String getUrl(){return url;}
+        public String getName(){return name;}
     }
 }

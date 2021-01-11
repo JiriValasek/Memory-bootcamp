@@ -23,6 +23,16 @@ import androidx.preference.PreferenceManager;
 
 import com.example.memorybootcamp.ui.challenges.binary.BinaryFragment;
 import com.example.memorybootcamp.ui.challenges.binary.BinaryFragmentDirections;
+import com.example.memorybootcamp.ui.challenges.cards.CardsFragment;
+import com.example.memorybootcamp.ui.challenges.cards.CardsFragmentDirections;
+import com.example.memorybootcamp.ui.challenges.faces.FacesFragment;
+import com.example.memorybootcamp.ui.challenges.faces.FacesFragmentDirections;
+import com.example.memorybootcamp.ui.challenges.numbers.NumbersFragment;
+import com.example.memorybootcamp.ui.challenges.numbers.NumbersFragmentDirections;
+import com.example.memorybootcamp.ui.challenges.words.WordsFragment;
+import com.example.memorybootcamp.ui.challenges.words.WordsFragmentDirections;
+import com.example.memorybootcamp.ui.home.HomeFragment;
+import com.example.memorybootcamp.ui.home.HomeFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -47,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.nav_home)
+        mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.home)
                 .setOpenableLayout(drawer)
                 .build();
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
@@ -86,9 +96,24 @@ public class MainActivity extends AppCompatActivity {
     public void onSettingsClicked(MenuItem item){
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         Fragment currentFragment = navHostFragment == null? null : navHostFragment.getChildFragmentManager().getFragments().get(0);
-        if (currentFragment instanceof BinaryFragment){
-                NavDirections action = BinaryFragmentDirections.actionNavBinaryToNavSettings();
-                Navigation.findNavController(currentFragment.getView()).navigate(action);
+        if (currentFragment instanceof HomeFragment) {
+            NavDirections action = HomeFragmentDirections.actionHomeToSettings();
+            Navigation.findNavController(currentFragment.getView()).navigate(action);
+        } else if (currentFragment instanceof BinaryFragment){
+            NavDirections action = BinaryFragmentDirections.actionBinaryToSettings();
+            Navigation.findNavController(currentFragment.getView()).navigate(action);
+        } else if (currentFragment instanceof CardsFragment){
+            NavDirections action = CardsFragmentDirections.actionCardsToSettings();
+            Navigation.findNavController(currentFragment.getView()).navigate(action);
+        } else if (currentFragment instanceof FacesFragment){
+            NavDirections action = FacesFragmentDirections.actionFacesToSettings();
+            Navigation.findNavController(currentFragment.getView()).navigate(action);
+        } else if (currentFragment instanceof NumbersFragment){
+            NavDirections action = NumbersFragmentDirections.actionNumbersToSettings();
+            Navigation.findNavController(currentFragment.getView()).navigate(action);
+        } else if (currentFragment instanceof WordsFragment){
+            NavDirections action = WordsFragmentDirections.actionWordsToSettings();
+            Navigation.findNavController(currentFragment.getView()).navigate(action);
         }
     }
 

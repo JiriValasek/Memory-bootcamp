@@ -13,21 +13,21 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memorybootcamp.R;
 import com.example.memorybootcamp.charts.ProgressLineChart;
-import com.example.memorybootcamp.ui.challenges.ChallengeIntroViewModel;
+import com.example.memorybootcamp.ui.challenges.ChallengeViewModel;
 import com.github.mikephil.charting.charts.LineChart;
 
 public class CardsFragment extends Fragment {
 
-    private ChallengeIntroViewModel challengeIntroViewModel;
+    private ChallengeViewModel viewModel;
     private ProgressLineChart chart;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        challengeIntroViewModel = new ViewModelProvider(this).get(ChallengeIntroViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ChallengeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_challenge, container, false);
         final TextView textView = root.findViewById(R.id.text_header);
-        challengeIntroViewModel.setHeader(getActivity().getString(R.string.cards_challenge_header));
-        challengeIntroViewModel.getHeader().observe(getViewLifecycleOwner(), textView::setText);
+        //challengeIntroViewModel.setHeader(getActivity().getString(R.string.cards_challenge_header));
+        viewModel.getHeader().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
@@ -37,7 +37,7 @@ public class CardsFragment extends Fragment {
 
         LineChart lineChart = getActivity().findViewById(R.id.progress_chart);
         chart = new ProgressLineChart(lineChart);
-        challengeIntroViewModel.getScores().observe(getViewLifecycleOwner(), floats -> {
+        viewModel.getScores().observe(getViewLifecycleOwner(), floats -> {
             chart.updateValues(floats[0], floats[1]);
             chart.updateColors();
         });
@@ -45,6 +45,6 @@ public class CardsFragment extends Fragment {
         float[] day = {0,3,5,30,31,32,35};
         float[] score = {10,5,9,20,8,20,40};
         float[][] scores = {day, score};
-        challengeIntroViewModel.setScores(scores);
+        //challengeIntroViewModel.setScores(scores);
     }
 }
