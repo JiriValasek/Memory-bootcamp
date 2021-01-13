@@ -8,6 +8,7 @@ import android.util.TypedValue;
 import androidx.annotation.ColorInt;
 
 import com.example.memorybootcamp.R;
+import com.example.memorybootcamp.database.ScoreType;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.github.mikephil.charting.components.Legend;
@@ -20,6 +21,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ProgressRadarChart {
 
@@ -27,6 +29,8 @@ public class ProgressRadarChart {
     private RadarData data;
     private RadarDataSet bestDataSet;
     private RadarDataSet weeksDataSet;
+    private final String BEST_SCORES_LABEL = "bests";
+    private final String WEEKS_BEST_SCORES_LABEL = "weeksBests";
     private final String[] categories = {"Cards", "Numbers", "Faces", "Binary\nNumbers", "Words"};
 
     public ProgressRadarChart(RadarChart radarChart){
@@ -65,25 +69,27 @@ public class ProgressRadarChart {
         l.setTextSize(9f);
         l.setXEntrySpace(7f);
         l.setYEntrySpace(5f);
+
+        initializeValues();
+        initializeColors();
     }
 
-    public void updateValues(float[] best, float[] week) {
+    public void initializeValues() {
 
         ArrayList<RadarEntry> bestEntries = new ArrayList<>();
         ArrayList<RadarEntry> weeksEntries = new ArrayList<>();
-        Log.d("MEMO","Lengths are " + best.length + ", " + week.length);
         for (int i = 0; i < categories.length; i++) {
-            bestEntries.add(new RadarEntry(best[i]));
-            weeksEntries.add(new RadarEntry(week[i]));
+            bestEntries.add(new RadarEntry(0f));
+            weeksEntries.add(new RadarEntry(0f));
         }
 
-        bestDataSet = new RadarDataSet(bestEntries, "Personal bests");
+        bestDataSet = new RadarDataSet(bestEntries, BEST_SCORES_LABEL);
         bestDataSet.setDrawFilled(true);
         bestDataSet.setLineWidth(2f);
         bestDataSet.setDrawHighlightCircleEnabled(false);
         bestDataSet.setDrawHighlightIndicators(false);
 
-        weeksDataSet = new RadarDataSet(weeksEntries, "This Week bests");
+        weeksDataSet = new RadarDataSet(weeksEntries, WEEKS_BEST_SCORES_LABEL);
         weeksDataSet.setDrawFilled(true);
         weeksDataSet.setLineWidth(2f);
         weeksDataSet.setDrawHighlightCircleEnabled(false);
@@ -103,10 +109,9 @@ public class ProgressRadarChart {
         chart.setData(data);
         chart.getData().setHighlightEnabled(true);
         chart.invalidate();
-
     }
 
-    public void updateColors(){
+    public void initializeColors(){
         TypedValue typedValue = new TypedValue();
         chart.getContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
         @ColorInt int foregroundColor = typedValue.data;
@@ -136,6 +141,28 @@ public class ProgressRadarChart {
         weeksDataSet.setFillColor(weekFillColor);
 
         data.setValueTextColor(yLabelsColor);
+    }
+
+    public void updateBests(List<ScoreType> scores){
+        if (scores.size() == categories.length) {
+            for (int i = 0; i < categories.length; i++) {
+                Log.d("BESTS", "> " + i + " - " + scores.get(i));
+                chart.getData().getDataSetByLabel(BEST_SCORES_LABEL, false)
+                        .getEntryForIndex(i).setY(scores.get(i).getScore());
+            }
+            chart.notifyDataSetChanged();
+        }
+    }
+
+    public void updateWeeksBests(List<ScoreType> scores){
+        if (scores.size() == categories.length) {
+            for (int i = 0; i < categories.length; i++) {
+                Log.d("WEEKS", "> " + i + " - " + scores.get(i));
+                chart.getData().getDataSetByLabel(WEEKS_BEST_SCORES_LABEL, false)
+                        .getEntryForIndex(i).setY(scores.get(i).getScore());
+            }
+            chart.notifyDataSetChanged();
+        }
     }
 
 }

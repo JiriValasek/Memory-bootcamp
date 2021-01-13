@@ -17,8 +17,9 @@
     <string name="menu_words">Words</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
-    <!-- Preferences -->
+    <!-- Preferences ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <string name="main_preferences_key">main_preferences</string>
+
     <!-- Preference Titles -->
     <string name="display_header">Display options</string>
     <string name="binary_header">Binary challenge</string>
@@ -32,14 +33,9 @@
     <string name="night_mode_off">off</string>
     <string name="night_mode_on">on</string>
 
-    <!-- Challenge screen -->
-    <string name="binary_challenge_header">Your results in binary numbers:</string>
-    <string name="numbers_challenge_header">Your results in numbers:</string>
-    <string name="words_challenge_header">Your results in words:</string>
-    <string name="faces_challenge_header">Your results in faces:</string>
-    <string name="cards_challenge_header">Your results in cards:</string>
-    <string name="home_page_header">These are your current results, finish a challenge to improve them</string>
-    <string name="placeholder">placeholder</string>
+    <!-- Last challenge -->
+    <string name="last_challenge_key">last_challenge</string>
+    <string name="last_challenge_default">binary</string>
 
     <!-- Binary Challange -->
     <string name="binary_size_title">Challenge size</string>
@@ -81,12 +77,12 @@
     <string name="signature_title">Your signature</string>
     <string name="reply_title">Default reply action</string>
 
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <!-- Challenge screen -->
+    <string name="binary_challenge_header">Your results in binary numbers:</string>
+    <string name="numbers_challenge_header">Your results in numbers:</string>
+    <string name="words_challenge_header">Your results in words:</string>
+    <string name="faces_challenge_header">Your results in faces:</string>
+    <string name="cards_challenge_header">Your results in cards:</string>
+    <string name="home_page_header">These are your current results, finish a challenge to improve them</string>
+    <string name="placeholder">placeholder</string>
 </resources>

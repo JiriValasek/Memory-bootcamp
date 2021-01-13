@@ -13,11 +13,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/Theme.MemoryBootcamp.NoActionBar" />
-        <activity
-            android:name=".SplashActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.MemoryBootcamp.NoActionBar">
+            android:theme="@style/Theme.MemoryBootcamp.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

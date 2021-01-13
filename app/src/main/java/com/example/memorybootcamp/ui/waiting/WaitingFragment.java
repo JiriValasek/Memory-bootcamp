@@ -28,13 +28,13 @@ import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import com.example.memorybootcamp.R;
-import com.example.memorybootcamp.databinding.WaitingFragmentBinding;
+import com.example.memorybootcamp.databinding.FragmentWaitingBinding;
 
 import java.util.Locale;
 
 public class WaitingFragment extends Fragment {
 
-    private WaitingFragmentBinding binding;
+    private FragmentWaitingBinding binding;
     private WaitingViewModel viewModel;
     private CountDownTimer timer;
     private long timeMs;
@@ -56,7 +56,7 @@ public class WaitingFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(WaitingViewModel.class);
-        binding = WaitingFragmentBinding.inflate(inflater, container, false);
+        binding = FragmentWaitingBinding.inflate(inflater, container, false);
         binding.setViewModel(viewModel);
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().hide(); // disable going back and settings

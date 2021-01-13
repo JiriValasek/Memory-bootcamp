@@ -41,4 +41,11 @@
 
     </PreferenceCategory>
 
+    <Preference
+        android:key="@string/last_challenge_key"
+        android:persistent="true"
+        android:defaultValue="@string/last_challenge_default"
+        app:enabled="false"
+        app:shouldDisableView="true"/>
+
 </PreferenceScreen>

@@ -13,27 +13,28 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.memorybootcamp.R;
 import com.example.memorybootcamp.charts.ProgressRadarChart;
+import com.example.memorybootcamp.database.ResultViewModel;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-//TODO - add more graphs, setup graphs to show current results from SharedPreferences & persistent files
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
+    private ResultViewModel mResultViewModel;
     private ProgressRadarChart chart;
+    private final int NUMBER_OF_TYPES = 5;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        mResultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         final TextView textView = root.findViewById(R.id.text_home);
         homeViewModel.setHeader(getActivity().getString(R.string.home_page_header));
         homeViewModel.getHeader().observe(getViewLifecycleOwner(), textView::setText);
 
-        FloatingActionButton fab =  (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         if (fab.getVisibility() != View.VISIBLE) fab.setVisibility(View.VISIBLE);
 
         return root;
@@ -45,21 +46,16 @@ public class HomeFragment extends Fragment {
 
         RadarChart radarChart = getActivity().findViewById(R.id.home_chart);
         chart = new ProgressRadarChart(radarChart);
-        homeViewModel.getScores().observe(getViewLifecycleOwner(), floats -> {
-            chart.updateValues(floats[0], floats[1]);
-            chart.updateColors();
-        });
-
-        float[] bestScores = {3, 10, 60, 20, 40};
-        float[] weeksScores = {2, 9, 60, 20, 20};
-        float[][] scores = {bestScores,weeksScores};
-        homeViewModel.setScores(scores);
+        mResultViewModel.getBestResults().observe(getViewLifecycleOwner(),
+                bestResults -> chart.updateBests(bestResults));
+        mResultViewModel.getWeeksBestResults().observe(getViewLifecycleOwner(),
+                weeksBestResults -> chart.updateWeeksBests(weeksBestResults));
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        FloatingActionButton fab =  (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         if (fab.getVisibility() != View.GONE) fab.setVisibility(View.GONE);
         this.chart = null;
     }

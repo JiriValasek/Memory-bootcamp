@@ -1,11 +1,13 @@
 package com.example.memorybootcamp;
 
 import android.app.UiModeManager;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +23,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
+import com.example.memorybootcamp.database.ResultViewModel;
 import com.example.memorybootcamp.ui.challenges.binary.BinaryFragment;
 import com.example.memorybootcamp.ui.challenges.binary.BinaryFragmentDirections;
 import com.example.memorybootcamp.ui.challenges.cards.CardsFragment;
@@ -35,7 +38,6 @@ import com.example.memorybootcamp.ui.home.HomeFragment;
 import com.example.memorybootcamp.ui.home.HomeFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,12 +51,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(
-                view -> Snackbar
-                        .make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show());
+        fab.setOnClickListener(this::onFabClicked);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.home)
@@ -96,25 +96,56 @@ public class MainActivity extends AppCompatActivity {
     public void onSettingsClicked(MenuItem item){
         Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         Fragment currentFragment = navHostFragment == null? null : navHostFragment.getChildFragmentManager().getFragments().get(0);
+        NavDirections action = null;
         if (currentFragment instanceof HomeFragment) {
-            NavDirections action = HomeFragmentDirections.actionHomeToSettings();
-            Navigation.findNavController(currentFragment.getView()).navigate(action);
+            action = HomeFragmentDirections.actionHomeToSettings();
         } else if (currentFragment instanceof BinaryFragment){
-            NavDirections action = BinaryFragmentDirections.actionBinaryToSettings();
-            Navigation.findNavController(currentFragment.getView()).navigate(action);
+            action = BinaryFragmentDirections.actionBinaryToSettings();
         } else if (currentFragment instanceof CardsFragment){
-            NavDirections action = CardsFragmentDirections.actionCardsToSettings();
-            Navigation.findNavController(currentFragment.getView()).navigate(action);
+            action = CardsFragmentDirections.actionCardsToSettings();
         } else if (currentFragment instanceof FacesFragment){
-            NavDirections action = FacesFragmentDirections.actionFacesToSettings();
-            Navigation.findNavController(currentFragment.getView()).navigate(action);
+            action = FacesFragmentDirections.actionFacesToSettings();
         } else if (currentFragment instanceof NumbersFragment){
-            NavDirections action = NumbersFragmentDirections.actionNumbersToSettings();
-            Navigation.findNavController(currentFragment.getView()).navigate(action);
+            action = NumbersFragmentDirections.actionNumbersToSettings();
         } else if (currentFragment instanceof WordsFragment){
-            NavDirections action = WordsFragmentDirections.actionWordsToSettings();
+            action = WordsFragmentDirections.actionWordsToSettings();
+        }
+        if (action!= null) {
             Navigation.findNavController(currentFragment.getView()).navigate(action);
         }
+    }
+
+    private void onFabClicked(View view){
+        Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        Fragment currentFragment = navHostFragment == null? null : navHostFragment.getChildFragmentManager().getFragments().get(0);
+        if (currentFragment instanceof HomeFragment) {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            String last_challenge = sharedPreferences.getString(getString(R.string.challenge_type),
+                    getString(R.string.last_challenge_default));
+            NavDirections action = null;
+            switch (last_challenge) {
+                case "binary":
+                    action = HomeFragmentDirections.actionHomeToBinary();
+                    break;
+                case "cards":
+                    action = HomeFragmentDirections.actionHomeToCards();
+                    break;
+                case "faces":
+                    action = HomeFragmentDirections.actionHomeToFaces();
+                    break;
+                case "numbers":
+                    action = HomeFragmentDirections.actionHomeToNumbers();
+                    break;
+                case "words":
+                    action = HomeFragmentDirections.actionHomeToWords();
+                    break;
+            }
+            if (action != null) {
+                Navigation.findNavController(currentFragment.getView()).navigate(action);
+            }
+        }
+
+
     }
 
 }
