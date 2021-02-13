@@ -9,6 +9,7 @@ import android.util.TypedValue;
 import androidx.annotation.ColorInt;
 
 import com.example.memorybootcamp.R;
+import com.example.memorybootcamp.database.ChallengeResult;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -19,10 +20,13 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ProgressLineChart{
     private final LineChart chart;
+    private LineData data;
     private LineDataSet dataSet;
 
     public ProgressLineChart(LineChart lineChart) {
@@ -46,15 +50,13 @@ public class ProgressLineChart{
         chart.setTouchEnabled(true);
         chart.setPinchZoom(true);
         chart.animateY(1400, Easing.EaseInOutQuad);
+
+        initializeValues();
+        initializeColors();
     }
 
-    public void updateValues(float[] day, float[] score) {
+    public void initializeValues() {
         ArrayList<Entry> entries = new ArrayList<>();
-        LineData data;
-
-        for (int i = 0; i < day.length; i++) {
-            entries.add(new Entry(day[i], score[i]));
-        }
         if (chart.getData() != null &&
                 chart.getData().getDataSetCount() > 0) {
             dataSet = (LineDataSet) chart.getData().getDataSetByIndex(0);
@@ -62,7 +64,7 @@ public class ProgressLineChart{
             chart.getData().notifyDataChanged();
             chart.notifyDataSetChanged();
         } else {
-            dataSet = new LineDataSet(entries, "Sample Data");
+            dataSet = new LineDataSet(entries, "Data");
             dataSet.setDrawIcons(false);
             dataSet.setLineWidth(1f);
             dataSet.setCircleRadius(3f);
@@ -81,7 +83,7 @@ public class ProgressLineChart{
         chart.invalidate();
     }
 
-    public void updateColors(){
+    public void initializeColors(){
 
         TypedValue typedValue = new TypedValue();
         chart.getContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
@@ -111,5 +113,40 @@ public class ProgressLineChart{
         dataSet.setCircleColor(lineColor);
         dataSet.setValueTextColor(labelsColor);
         dataSet.setHighLightColor(labelsColor);
+    }
+
+
+    public void updateValues(List<ChallengeResult> results) {
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        results.sort((r1, r2) -> r1.getDate().compareTo(r2.getDate()));
+        for (ChallengeResult r : results) {
+            Duration duration = Duration.between(results.get(0).getDate(), r.getDate());
+            entries.add(new Entry(duration.toDays(), r.getScore()));
+        }
+        if (chart.getData() != null &&
+                chart.getData().getDataSetCount() > 0) {
+            dataSet = (LineDataSet) chart.getData().getDataSetByIndex(0);
+            dataSet.setValues(entries);
+            chart.getData().notifyDataChanged();
+            chart.notifyDataSetChanged();
+        } else {
+            dataSet = new LineDataSet(entries, "Sample Data");
+            dataSet.setDrawIcons(false);
+            dataSet.setLineWidth(1f);
+            dataSet.setCircleRadius(3f);
+            dataSet.setDrawCircleHole(false);
+            dataSet.setValueTextSize(9f);
+            dataSet.setDrawFilled(true);
+            dataSet.setFormLineWidth(1f);
+            dataSet.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
+            dataSet.setFormSize(15.f);
+
+            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+            dataSets.add(dataSet);
+            data = new LineData(dataSets);
+            chart.setData(data);
+        }
+        chart.invalidate();
     }
 }

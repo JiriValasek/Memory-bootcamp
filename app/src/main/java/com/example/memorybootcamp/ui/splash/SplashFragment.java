@@ -42,6 +42,14 @@ public class SplashFragment extends Fragment {
         icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_splashscreen_nonstop);
         viewModel.setSplashIcon(icon);
 
+        // Inflate the layout for this fragment
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // TODO: Use the ViewModel
         ImageView splashImage = binding.imageViewSplash; //TODO use binding or VM?
         AnimatorSet set = new AnimatorSet();
         Animator fadeIn = AnimatorInflater.loadAnimator(getContext(), R.animator.splash_fade_in);
@@ -52,7 +60,7 @@ public class SplashFragment extends Fragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 NavDirections action = SplashFragmentDirections.actionSplashToHome();
-                Navigation.findNavController(getView()).navigate(action);
+                Navigation.findNavController(getActivity(), R.id.nav_host_fragment).navigate(action);
             }
 
             @Override
@@ -64,15 +72,6 @@ public class SplashFragment extends Fragment {
         fadeIn.setTarget(splashImage);
         set.play(fadeIn);
         set.start();
-
-        // Inflate the layout for this fragment
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        // TODO: Use the ViewModel
     }
 
     @Override

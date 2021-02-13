@@ -1,4 +1,4 @@
-package com.example.memorybootcamp.ui;
+package com.example.memorybootcamp.ui.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,11 +19,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
-        prepareBinarySize();
-        prepareBinaryTime();
-        prepareBinaryWait();
-        prepareBinaryAnswer();
-
+        prepareChallengePreferences();
         Preference button = findPreference(getString(R.string.os_key));
         button.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(getContext(), OssLicensesMenuActivity.class);
@@ -32,9 +28,24 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    private void prepareBinarySize(){
+    private void prepareChallengePreferences(){
+        int[] timeKeys = {R.string.binary_time_key, R.string.faces_time_key, R.string.numbers_time_key};
+        int[] waitKeys = {R.string.binary_wait_key, R.string.faces_wait_key, R.string.numbers_wait_key};
+        int[] answerKeys = {R.string.binary_answer_key, R.string.faces_answer_key, R.string.numbers_answer_key};
+        int[] sizeKeys = {R.string.binary_size_key, R.string.faces_size_key, R.string.numbers_size_key};
+        String[] sizeSuffices = {" bits", " faces", "numbers"};
+
+        for (int i = 0; i < timeKeys.length; i++) {
+            prepareSize(sizeKeys[i], sizeSuffices[i] );
+            prepareBinaryTime(timeKeys[i]);
+            prepareBinaryWait(waitKeys[i]);
+            prepareBinaryAnswer(answerKeys[i]);
+        }
+    }
+
+    private void prepareSize(int sizeKeyId, String suffix){
         EditTextPreference editTextPreference =
-                getPreferenceManager().findPreference(getString(R.string.binary_size_key));
+                getPreferenceManager().findPreference(getString(sizeKeyId));
         editTextPreference.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER));
         editTextPreference.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -51,29 +62,29 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                                     Toast.LENGTH_LONG).show();
                             return false;
                         }
-                        preference.setSummary(newValue + " bits");
+                        preference.setSummary(newValue + suffix);
                         return true;
                     }
                 });
-        editTextPreference.setSummary(editTextPreference.getText() + " bits");
+        editTextPreference.setSummary(editTextPreference.getText() + suffix);
     }
 
 
-    private void prepareBinaryTime(){
+    private void prepareBinaryTime(int timeKeyId){
         EditTextPreference editTextPreference =
-                getPreferenceManager().findPreference(getString(R.string.binary_time_key));
+                getPreferenceManager().findPreference(getString(timeKeyId));
         setupTimePreference(editTextPreference, "Time to memorize (minutes)");
     }
 
-    private void prepareBinaryWait(){
+    private void prepareBinaryWait(int waitKeyId){
         EditTextPreference editTextPreference =
-                getPreferenceManager().findPreference(getString(R.string.binary_wait_key));
+                getPreferenceManager().findPreference(getString(waitKeyId));
         setupTimePreference(editTextPreference, "Time before recollection (minutes)");
     }
 
-    private void prepareBinaryAnswer(){
+    private void prepareBinaryAnswer(int answerKeyId){
         EditTextPreference editTextPreference =
-                getPreferenceManager().findPreference(getString(R.string.binary_answer_key));
+                getPreferenceManager().findPreference(getString(answerKeyId));
         setupTimePreference(editTextPreference, "Time to answer (minutes)");
     }
 

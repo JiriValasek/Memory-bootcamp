@@ -26,6 +26,26 @@ public abstract class ResultRoomDatabase extends RoomDatabase {
     private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
 
         @Override
+        public void onOpen(@NonNull SupportSQLiteDatabase db) {
+            //TODO onOpen add 0 results
+            //TODO onClose prune 0 results except the oldest ones
+            super.onOpen(db);
+            databaseWriteExecutor.execute(() -> {
+                // Populate the database in the background.
+                // If you want to start with more words, just add them.
+                ResultDao dao = INSTANCE.resultDao();
+                dao.pruneEmptyRows();
+                String[] challengeTypes = {"binary","cards","faces","numbers","words"};
+                for (String ct:challengeTypes) {
+                    Result result = new Result(0, 0,
+                            OffsetDateTime.now(),ct);
+                    dao.insert(result);
+                    dao.leaveOnlyOneRecordOfTheDay(ct);
+                }
+            });
+        }
+
+        @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
             // do something after database has been created

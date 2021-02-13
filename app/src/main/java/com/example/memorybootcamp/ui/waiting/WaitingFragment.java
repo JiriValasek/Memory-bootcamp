@@ -66,12 +66,13 @@ public class WaitingFragment extends Fragment {
         getContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
         @ColorInt int foregroundColor = typedValue.data;
         Drawable icon;
+        String time;
         switch (type) {
             case "binary":
                 icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_binary_numbers);
                 icon.setTint(foregroundColor);
                 viewModel.setWaitingIcon(icon);
-                String time = sharedPreferences.getString(getString(R.string.binary_wait_key),
+                time = sharedPreferences.getString(getString(R.string.binary_wait_key),
                         getString(R.string.binary_wait_default));
                 timeMs = Math.round(Float.parseFloat(time)*60*1000);
                 actionReturn = WaitingFragmentDirections.actionWaitingToBinary();
@@ -80,7 +81,7 @@ public class WaitingFragment extends Fragment {
                         .setMode("recollection");
                 ((WaitingFragmentDirections.ActionWaitingToBinaryTraining) actionTimeout)
                         .setTaskContent(WaitingFragmentArgs.fromBundle(getArguments())
-                                .getTaskContent());
+                                .getBinaryTaskContent());
                 break;
             case "cards":
                 icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_cards);
@@ -91,11 +92,31 @@ public class WaitingFragment extends Fragment {
                 icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_faces);
                 icon.setTint(foregroundColor);
                 viewModel.setWaitingIcon(icon);
+                time = sharedPreferences.getString(getString(R.string.faces_wait_key),
+                        getString(R.string.faces_wait_default));
+                timeMs = Math.round(Float.parseFloat(time)*60*1000);
+                actionReturn = WaitingFragmentDirections.actionWaitingToFaces();
+                actionTimeout = WaitingFragmentDirections.actionWaitingToFacesTraining();
+                ((WaitingFragmentDirections.ActionWaitingToFacesTraining) actionTimeout)
+                        .setMode("recollection");
+                ((WaitingFragmentDirections.ActionWaitingToFacesTraining) actionTimeout)
+                        .setTaskContent(WaitingFragmentArgs.fromBundle(getArguments())
+                                .getFacesTaskContent());
                 break;
             case "numbers":
                 icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_numbers);
                 icon.setTint(foregroundColor);
                 viewModel.setWaitingIcon(icon);
+                time = sharedPreferences.getString(getString(R.string.numbers_wait_key),
+                        getString(R.string.numbers_wait_default));
+                timeMs = Math.round(Float.parseFloat(time)*60*1000);
+                actionReturn = WaitingFragmentDirections.actionWaitingToNumbers();
+                actionTimeout = WaitingFragmentDirections.actionWaitingToNumbersTraining();
+                ((WaitingFragmentDirections.ActionWaitingToNumbersTraining) actionTimeout)
+                        .setMode("recollection");
+                ((WaitingFragmentDirections.ActionWaitingToNumbersTraining) actionTimeout)
+                        .setTaskContent(WaitingFragmentArgs.fromBundle(getArguments())
+                                .getNumbersTaskContent());
                 break;
             case "words":
                 icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_words);

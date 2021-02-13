@@ -2,7 +2,6 @@ package com.example.memorybootcamp.charts;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
@@ -32,6 +31,7 @@ public class ProgressRadarChart {
     private final String BEST_SCORES_LABEL = "bests";
     private final String WEEKS_BEST_SCORES_LABEL = "weeksBests";
     private final String[] categories = {"Cards", "Numbers", "Faces", "Binary\nNumbers", "Words"};
+    private final float maximumScoreToYAxisMaximum = 1.1f;
 
     public ProgressRadarChart(RadarChart radarChart){
 
@@ -57,6 +57,7 @@ public class ProgressRadarChart {
         YAxis yAxis = chart.getYAxis();
         yAxis.setLabelCount(5, false);
         yAxis.setAxisMinimum(0f);
+        yAxis.setMaxWidth(1f);
         yAxis.setDrawLabels(false);
         yAxis.enableGridDashedLine(10f, 10f, 0f);
 
@@ -144,11 +145,16 @@ public class ProgressRadarChart {
     }
 
     public void updateBests(List<ScoreType> scores){
+
+        YAxis yAxis = chart.getYAxis();
+
         if (scores.size() == categories.length) {
             for (int i = 0; i < categories.length; i++) {
-                Log.d("BESTS", "> " + i + " - " + scores.get(i));
                 chart.getData().getDataSetByLabel(BEST_SCORES_LABEL, false)
                         .getEntryForIndex(i).setY(scores.get(i).getScore());
+                if (scores.get(i).getScore() > yAxis.getAxisMaximum()){
+                    yAxis.setAxisMaximum(maximumScoreToYAxisMaximum*scores.get(i).getScore());
+                }
             }
             chart.notifyDataSetChanged();
         }
@@ -157,7 +163,6 @@ public class ProgressRadarChart {
     public void updateWeeksBests(List<ScoreType> scores){
         if (scores.size() == categories.length) {
             for (int i = 0; i < categories.length; i++) {
-                Log.d("WEEKS", "> " + i + " - " + scores.get(i));
                 chart.getData().getDataSetByLabel(WEEKS_BEST_SCORES_LABEL, false)
                         .getEntryForIndex(i).setY(scores.get(i).getScore());
             }

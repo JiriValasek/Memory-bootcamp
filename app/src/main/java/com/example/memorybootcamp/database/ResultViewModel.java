@@ -43,5 +43,10 @@ public class ResultViewModel extends AndroidViewModel {
 
     public void insert(Result result) { mRepository.insert(result); }
 
-    public void update(@NotNull String type, int score) { mRepository.update(type,score); }
+    public void update(@NotNull String type, int score, int total) {
+        mRepository.update(type,score,total); }
+
+    public void leaveOnlyOneBestOfTheDay(@NotNull String type){
+        mRepository.leaveOnlyOneRecordOfTheDay(type);
+    }
 }

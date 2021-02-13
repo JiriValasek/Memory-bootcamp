@@ -37,10 +37,6 @@ public class CardsFragment extends Fragment {
 
         LineChart lineChart = getActivity().findViewById(R.id.progress_chart);
         chart = new ProgressLineChart(lineChart);
-        viewModel.getScores().observe(getViewLifecycleOwner(), floats -> {
-            chart.updateValues(floats[0], floats[1]);
-            chart.updateColors();
-        });
 
         float[] day = {0,3,5,30,31,32,35};
         float[] score = {10,5,9,20,8,20,40};

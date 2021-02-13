@@ -23,7 +23,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
-import com.example.memorybootcamp.database.ResultViewModel;
 import com.example.memorybootcamp.ui.challenges.binary.BinaryFragment;
 import com.example.memorybootcamp.ui.challenges.binary.BinaryFragmentDirections;
 import com.example.memorybootcamp.ui.challenges.cards.CardsFragment;
@@ -38,6 +37,7 @@ import com.example.memorybootcamp.ui.home.HomeFragment;
 import com.example.memorybootcamp.ui.home.HomeFragmentDirections;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -120,25 +120,23 @@ public class MainActivity extends AppCompatActivity {
         Fragment currentFragment = navHostFragment == null? null : navHostFragment.getChildFragmentManager().getFragments().get(0);
         if (currentFragment instanceof HomeFragment) {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-            String last_challenge = sharedPreferences.getString(getString(R.string.challenge_type),
+            String last_challenge = sharedPreferences.getString(getString(R.string.last_challenge_key),
                     getString(R.string.last_challenge_default));
             NavDirections action = null;
-            switch (last_challenge) {
-                case "binary":
-                    action = HomeFragmentDirections.actionHomeToBinary();
-                    break;
-                case "cards":
-                    action = HomeFragmentDirections.actionHomeToCards();
-                    break;
-                case "faces":
-                    action = HomeFragmentDirections.actionHomeToFaces();
-                    break;
-                case "numbers":
-                    action = HomeFragmentDirections.actionHomeToNumbers();
-                    break;
-                case "words":
-                    action = HomeFragmentDirections.actionHomeToWords();
-                    break;
+            if (last_challenge.equals(getString(R.string.challenge_binary))) {
+                action = HomeFragmentDirections.actionHomeToBinary();
+            } else if (last_challenge.equals(getString(R.string.challenge_cards))) {
+                action = HomeFragmentDirections.actionHomeToCards();
+            } else if (last_challenge.equals(getString(R.string.challenge_faces))) {
+                action = HomeFragmentDirections.actionHomeToFaces();
+            } else if (last_challenge.equals(getString(R.string.challenge_numbers))) {
+                action = HomeFragmentDirections.actionHomeToNumbers();
+            } else if (last_challenge.equals(getString(R.string.challenge_words))) {
+                action = HomeFragmentDirections.actionHomeToWords();
+            } else {
+                Snackbar.make(view,"This is a shortcut to last challenge type. " +
+                        "Start a challenge to make it work.", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
             if (action != null) {
                 Navigation.findNavController(currentFragment.getView()).navigate(action);

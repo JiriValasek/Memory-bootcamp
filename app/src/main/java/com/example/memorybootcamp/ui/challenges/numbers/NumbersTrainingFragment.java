@@ -1,4 +1,4 @@
-package com.example.memorybootcamp.ui.challenges.binary;
+package com.example.memorybootcamp.ui.challenges.numbers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,22 +32,16 @@ import androidx.preference.PreferenceManager;
 
 import com.example.memorybootcamp.R;
 import com.example.memorybootcamp.database.ResultViewModel;
-import com.example.memorybootcamp.databinding.FragmentBinaryTrainingBinding;
-import com.example.memorybootcamp.generators.BinaryNumberGenerator;
+import com.example.memorybootcamp.databinding.FragmentNumbersTrainingBinding;
+import com.example.memorybootcamp.generators.NumberGenerator;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-/*TODO use icons on toolbar and button
-https://www.flaticon.com/free-icon/thinking_1491165?term=brain&page=1&position=7&related_item_id=1491165
-https://www.flaticon.com/free-icon/idea_1491174?term=brain&page=1&position=34&related_item_id=1491174
-https://www.flaticon.com/free-icon/autism_1491171?term=brain&page=1&position=58&related_item_id=1491171
- */
+public class NumbersTrainingFragment extends Fragment {
 
-public class BinaryTrainingFragment extends Fragment {
-
-    private FragmentBinaryTrainingBinding binding;
-    private BinaryTrainingViewModel viewModel;
+    private FragmentNumbersTrainingBinding binding;
+    private NumbersTrainingViewModel viewModel;
     private CountDownTimer timer;
     private NavDirections exitAction;
     private String mode;
@@ -61,13 +55,13 @@ public class BinaryTrainingFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        viewModel = new ViewModelProvider(this).get(BinaryTrainingViewModel.class);
-        binding = FragmentBinaryTrainingBinding.inflate(inflater, container, false);
+        viewModel = new ViewModelProvider(this).get(NumbersTrainingViewModel.class);
+        binding = FragmentNumbersTrainingBinding.inflate(inflater, container, false);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
 
         // get arguments
-        mode = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getMode();
+        mode = NumbersTrainingFragmentArgs.fromBundle(getArguments()).getMode();
         prepareTextEdit(mode.equals("recollection"));
         switch (mode) {
             case "task":
@@ -76,14 +70,14 @@ public class BinaryTrainingFragment extends Fragment {
                 viewModel.setButtonText("I am already finished");
                 break;
             case "recollection":
-                taskContent = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
+                taskContent = NumbersTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
                 setupChallenge(mode.equals("task"), "Answer in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
                 break;
             case "results":
-                taskContent = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
-                answers = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getAnswers();
+                taskContent = NumbersTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
+                answers = NumbersTrainingFragmentArgs.fromBundle(getArguments()).getAnswers();
                 processResults();
                 break;
         }
@@ -120,7 +114,7 @@ public class BinaryTrainingFragment extends Fragment {
         alertDialog.setMessage(message); // Setting Dialog Message
         // Setting OK Button
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", (dialog, which) -> {
-            NavDirections action = BinaryTrainingFragmentDirections.actionBinaryTrainingToBinary();
+            NavDirections action = NumbersTrainingFragmentDirections.actionNumbersTrainingToNumbers();
             Navigation.findNavController(getView()).navigate(action);
         });
         // Setting Cancel button
@@ -133,8 +127,8 @@ public class BinaryTrainingFragment extends Fragment {
 
         // Setup challenge
         if (fillInTask) {
-            String size = sharedPreferences.getString(getString(R.string.binary_size_key), getString(R.string.binary_size_default));
-            BinaryNumberGenerator generator = new BinaryNumberGenerator();
+            String size = sharedPreferences.getString(getString(R.string.numbers_size_key), getString(R.string.numbers_size_default));
+            NumberGenerator generator = new NumberGenerator();
             ArrayList<String> challenge = generator.generateSequence(Integer.parseInt(size));
             StringBuilder challengeText = new StringBuilder();
             for (String s : challenge) {
@@ -146,11 +140,11 @@ public class BinaryTrainingFragment extends Fragment {
         // Setup timer
         String time;
         if (mode.equals("task")) {
-            time = sharedPreferences.getString(getString(R.string.binary_time_key),
-                    getString(R.string.binary_time_default));
+            time = sharedPreferences.getString(getString(R.string.numbers_time_key),
+                    getString(R.string.numbers_time_default));
         } else {
-            time = sharedPreferences.getString(getString(R.string.binary_answer_key),
-                    getString(R.string.binary_answer_default));
+            time = sharedPreferences.getString(getString(R.string.numbers_answer_key),
+                    getString(R.string.numbers_answer_default));
         }
         long timeMs = Math.round(Float.parseFloat(time)*60*1000);
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
@@ -200,17 +194,18 @@ public class BinaryTrainingFragment extends Fragment {
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Your Results");
         setDescription();
-        viewModel.setButtonText("Back to binary stats");
+        viewModel.setButtonText("Back to numbers stats");
+
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(getString(R.string.last_challenge_key), getString(R.string.challenge_binary));
+        editor.putString(getString(R.string.last_challenge_key), getString(R.string.challenge_numbers));
         editor.apply();
         editor.commit();
 
         ResultViewModel mResultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
-        mResultViewModel.update("binary", correctCount, taskContent[0].length());
-        mResultViewModel.leaveOnlyOneBestOfTheDay("binary");
+        mResultViewModel.update("numbers", correctCount, taskContent[0].length());
+        mResultViewModel.leaveOnlyOneBestOfTheDay("numbers");
     }
 
     private void prepareTextEdit(boolean editable){
@@ -218,7 +213,7 @@ public class BinaryTrainingFragment extends Fragment {
         binding.challengeText.setCursorVisible(editable);
         if (editable){
             binding.challengeText.setInputType( InputType.TYPE_TEXT_FLAG_MULTI_LINE |
-                InputType.TYPE_CLASS_TEXT);
+                    InputType.TYPE_CLASS_TEXT);
             binding.challengeText.requestFocus();
         }
     }
@@ -237,26 +232,26 @@ public class BinaryTrainingFragment extends Fragment {
     private void exitFunction() {
         switch (mode) {
             case "task":
-                exitAction = BinaryTrainingFragmentDirections.actionBinaryTrainingToWaiting();
-                ((BinaryTrainingFragmentDirections.ActionBinaryTrainingToWaiting) exitAction)
-                        .setChallengeType("binary");
+                exitAction = NumbersTrainingFragmentDirections.actionNumbersTrainingToWaiting();
+                ((NumbersTrainingFragmentDirections.ActionNumbersTrainingToWaiting) exitAction)
+                        .setChallengeType("numbers");
                 String[] task = {String.valueOf(binding.challengeText.getText())};
-                ((BinaryTrainingFragmentDirections.ActionBinaryTrainingToWaiting) exitAction)
-                        .setBinaryTaskContent(task);
+                ((NumbersTrainingFragmentDirections.ActionNumbersTrainingToWaiting) exitAction)
+                        .setNumbersTaskContent(task);
                 break;
             case "recollection":
 
-                exitAction = BinaryTrainingFragmentDirections.actionBinaryTrainingSelf();
+                exitAction = NumbersTrainingFragmentDirections.actionNumbersTrainingSelf();
                 String[] answer = {String.valueOf(binding.challengeText.getText())};
-                ((BinaryTrainingFragmentDirections.ActionBinaryTrainingSelf) exitAction)
+                ((NumbersTrainingFragmentDirections.ActionNumbersTrainingSelf) exitAction)
                         .setMode("results");
-                ((BinaryTrainingFragmentDirections.ActionBinaryTrainingSelf) exitAction)
+                ((NumbersTrainingFragmentDirections.ActionNumbersTrainingSelf) exitAction)
                         .setAnswers(answer);
-                ((BinaryTrainingFragmentDirections.ActionBinaryTrainingSelf) exitAction)
+                ((NumbersTrainingFragmentDirections.ActionNumbersTrainingSelf) exitAction)
                         .setTaskContent(taskContent);
                 break;
             case "results":
-                exitAction = BinaryTrainingFragmentDirections.actionBinaryTrainingToBinary();
+                exitAction = NumbersTrainingFragmentDirections.actionNumbersTrainingToNumbers();
         }
         Navigation.findNavController(getView()).navigate(exitAction);
     }

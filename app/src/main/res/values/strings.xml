@@ -1,7 +1,8 @@
 <resources>
+    <!-- Application strings ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <string name="app_name">Memory Bootcamp</string>
     <string name="splashscreen_logo">Splashscreen logo</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Memory Bootcamp</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Memory Bootcamp</string>
@@ -15,7 +16,6 @@
     <string name="menu_faces">Faces</string>
     <string name="menu_binary_numbers">Binary numbers</string>
     <string name="menu_words">Words</string>
-    <string name="title_activity_settings">SettingsActivity</string>
 
     <!-- Preferences ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <string name="main_preferences_key">main_preferences</string>
@@ -35,9 +35,15 @@
 
     <!-- Last challenge -->
     <string name="last_challenge_key">last_challenge</string>
-    <string name="last_challenge_default">binary</string>
+    <string name="last_challenge_default">empty</string>
+    <string name="challenge_binary">binary</string>
+    <string name="challenge_numbers">numbers</string>
+    <string name="challenge_words">words</string>
+    <string name="challenge_faces">faces</string>
+    <string name="challenge_cards">cards</string>
 
     <!-- Binary Challange -->
+    <string name="binary_title">Binary challenge settings</string>
     <string name="binary_size_title">Challenge size</string>
     <string name="binary_size_key">binary_size</string>
     <string name="binary_size_default">20</string>
@@ -51,10 +57,35 @@
     <string name="binary_answer_key">binary_answer</string>
     <string name="binary_answer_default">3</string>
 
-    <string name="start_challange">Start training</string>
-    <string name="continue_challange">I am already finished</string>
+    <!-- Numbers Challange -->
+    <string name="numbers_title">Number challenge settings</string>
+    <string name="numbers_size_title">Challenge size</string>
+    <string name="numbers_size_key">numbers_size</string>
+    <string name="numbers_size_default">20</string>
+    <string name="numbers_time_title">Time to memorize</string>
+    <string name="numbers_time_key">numbers_memorize</string>
+    <string name="numbers_time_default">3</string>
+    <string name="numbers_wait_title">Time to recollection</string>
+    <string name="numbers_wait_key">numbers_wait</string>
+    <string name="numbers_wait_default">3</string>
+    <string name="numbers_answer_title">Time to answer</string>
+    <string name="numbers_answer_key">numbers_answer</string>
+    <string name="numbers_answer_default">3</string>
 
-    <string name="challenge_type">Challenge Type</string>
+    <!-- Faces Challange -->
+    <string name="faces_title">Faces challenge settings</string>
+    <string name="faces_size_title">Challenge size</string>
+    <string name="faces_size_key">faces_size</string>
+    <string name="faces_size_default">5</string>
+    <string name="faces_time_title">Time to memorize</string>
+    <string name="faces_time_key">faces_memorize</string>
+    <string name="faces_time_default">3</string>
+    <string name="faces_wait_title">Time to recollection</string>
+    <string name="faces_wait_key">faces_wait</string>
+    <string name="faces_wait_default">3</string>
+    <string name="faces_answer_title">Time to answer</string>
+    <string name="faces_answer_key">faces_answer</string>
+    <string name="faces_answer_default">3</string>
 
     <!-- Legal information -->
     <string name="os_notices">Open Source Notices</string>
@@ -69,7 +100,7 @@
     <!-- Content Descriptions -->
     <string name="desc_bullhorn">trumpet</string>
     <string name="desc_binary">binary number</string>
-    <string name="title_activity_binary_practice">Binary numbers practice</string>
+
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
 
@@ -77,12 +108,21 @@
     <string name="signature_title">Your signature</string>
     <string name="reply_title">Default reply action</string>
 
-    <!-- Challenge screen -->
-    <string name="binary_challenge_header">Your results in binary numbers:</string>
-    <string name="numbers_challenge_header">Your results in numbers:</string>
-    <string name="words_challenge_header">Your results in words:</string>
-    <string name="faces_challenge_header">Your results in faces:</string>
-    <string name="cards_challenge_header">Your results in cards:</string>
+    <!-- Challenge screens ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <string name="binary_challenge_header">Your scores in binary numbers:</string>
+    <string name="numbers_challenge_header">Your scores in numbers:</string>
+    <string name="words_challenge_header">Your scores in words:</string>
+    <string name="faces_challenge_header">Your scores in faces:</string>
+    <string name="cards_challenge_header">Your scores in cards:</string>
     <string name="home_page_header">These are your current results, finish a challenge to improve them</string>
     <string name="placeholder">placeholder</string>
+    <string name="start_challange">Start training</string>
+    <string name="continue_challange">I am already finished</string>
+    <string name="waiting_challenge_type_icon_description">Challenge icon during waiting</string>
+    <string name="chart_xaxis_label">Time from the first practice [days]</string>
+    <string name="faces_challenge_face_image">Face to remember</string>
+    <string name="faces_challenge_face_hint">Name of a person</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

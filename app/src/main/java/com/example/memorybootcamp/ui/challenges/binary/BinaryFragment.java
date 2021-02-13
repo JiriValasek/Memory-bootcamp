@@ -16,6 +16,7 @@ import androidx.preference.PreferenceManager;
 
 import com.example.memorybootcamp.R;
 import com.example.memorybootcamp.charts.ProgressLineChart;
+import com.example.memorybootcamp.database.ResultViewModel;
 import com.example.memorybootcamp.databinding.FragmentChallengeBinding;
 import com.example.memorybootcamp.ui.challenges.ChallengeViewModel;
 import com.github.mikephil.charting.charts.LineChart;
@@ -24,6 +25,7 @@ public class BinaryFragment extends Fragment {
 
     private FragmentChallengeBinding binding;
     private ChallengeViewModel viewModel;
+    private ResultViewModel mResultViewModel;
     private ProgressLineChart chart;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -33,6 +35,9 @@ public class BinaryFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(ChallengeViewModel.class);
         viewModel.setHeader(getActivity().getString(R.string.binary_challenge_header));
         binding.setViewModel(viewModel);
+        binding.setLifecycleOwner(this);
+
+        mResultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String size = sharedPreferences.getString(getString(R.string.binary_size_key), getString(R.string.binary_size_default));
@@ -52,15 +57,11 @@ public class BinaryFragment extends Fragment {
             Navigation.findNavController(getView()).navigate(action);
         });
 
-        // Setup graph
+        // Setup graph from mResultViewModel
         LineChart lineChart = binding.progressChart;
         chart = new ProgressLineChart(lineChart);
-
-        // Update graph data
-        float[] day = {0,3,5,30,31,32,35};
-        float[] score = {10,5,9,20,8,20,40};
-        chart.updateValues(day, score);
-        chart.updateColors();
+        mResultViewModel.getBinaryResults().observe(getViewLifecycleOwner(),
+                results -> chart.updateValues(results));
     }
 
     @Override

@@ -16,6 +16,15 @@ import com.example.memorybootcamp.charts.ProgressLineChart;
 import com.example.memorybootcamp.ui.challenges.ChallengeViewModel;
 import com.github.mikephil.charting.charts.LineChart;
 
+/**
+ * Use tutorials:
+ * https://stackoverflow.com/questions/18834636/random-word-generator-python
+ * https://github.com/mcnaveen/Random-Words-API
+ * https://github.com/dwyl/english-words
+ * https://stackoverflow.com/questions/9762057/how-to-download-file-image-from-url-to-your-android-app
+ *
+ */
+
 public class WordsFragment extends Fragment {
 
     private ChallengeViewModel viewModel;
@@ -37,10 +46,6 @@ public class WordsFragment extends Fragment {
 
         LineChart lineChart = getActivity().findViewById(R.id.progress_chart);
         chart = new ProgressLineChart(lineChart);
-        viewModel.getScores().observe(getViewLifecycleOwner(), floats -> {
-            chart.updateValues(floats[0], floats[1]);
-            chart.updateColors();
-        });
 
         float[] day = {0,3,5,30,31,32,35};
         float[] score = {10,5,9,20,8,20,40};

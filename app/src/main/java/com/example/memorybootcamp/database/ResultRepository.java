@@ -61,7 +61,24 @@ class ResultRepository {
         ResultRoomDatabase.databaseWriteExecutor.execute(() -> mResultDao.insert(result));
     }
 
-    void update(@NotNull String type, int score){
-        ResultRoomDatabase.databaseWriteExecutor.execute(() -> mResultDao.updateTodayScore(type, score));
+    Result getTodayResult(@NotNull String type){
+        return mResultDao.getTodayResult(type).getValue();
     }
+
+    void update(@NotNull String type, int score, int total){
+        ResultRoomDatabase.databaseWriteExecutor.execute(
+                () -> mResultDao.updateTodayScore(type, score, total));
+    }
+
+
+    void leaveOnlyOneRecordOfTheDay(@NotNull String type){
+        ResultRoomDatabase.databaseWriteExecutor.execute(
+                () -> mResultDao.leaveOnlyOneRecordOfTheDay(type));
+    }
+
+    void pruneEmptyRows(@NotNull String type){
+        ResultRoomDatabase.databaseWriteExecutor.execute(
+                () -> mResultDao.pruneEmptyRows());
+    }
+
 }
