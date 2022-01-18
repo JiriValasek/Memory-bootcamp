@@ -21,28 +21,33 @@ import com.example.memorybootcamp.databinding.FragmentChallengeBinding;
 import com.example.memorybootcamp.ui.challenges.ChallengeViewModel;
 import com.github.mikephil.charting.charts.LineChart;
 
+/** Introduction fragment for binary challenge. */
 public class BinaryFragment extends Fragment {
 
+    /** Data-binding to a fragment. */
     private FragmentChallengeBinding binding;
+    /** View-binding to a view data. */
     private ChallengeViewModel viewModel;
     private ResultViewModel mResultViewModel;
     private ProgressLineChart chart;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        binding = FragmentChallengeBinding.inflate(inflater, container, false);
+        // adding view binding
         viewModel = new ViewModelProvider(this).get(ChallengeViewModel.class);
-        viewModel.setHeader(getActivity().getString(R.string.binary_challenge_header));
+        // setting data binding
+        binding = FragmentChallengeBinding.inflate(inflater, container, false);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
-
+        // retrieving view binding for graph and database
         mResultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        // size and time preferences
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(requireContext());
         String size = sharedPreferences.getString(getString(R.string.binary_size_key), getString(R.string.binary_size_default));
         String time = sharedPreferences.getString(getString(R.string.binary_time_key), getString(R.string.binary_size_default));
-
+        // setting up the view
+        viewModel.setHeader(requireActivity().getString(R.string.binary_challenge_header));
         viewModel.setDescription(getDescription(time, size));
         viewModel.setStartChallengeAllowed(true);
         return binding.getRoot();
@@ -54,9 +59,8 @@ public class BinaryFragment extends Fragment {
         // Add callback to start practice
         binding.startChallengeButton.setOnClickListener(v -> {
             NavDirections action = BinaryFragmentDirections.actionBinaryToBinaryTraining();
-            Navigation.findNavController(getView()).navigate(action);
+            Navigation.findNavController(requireView()).navigate(action);
         });
-
         // Setup graph from mResultViewModel
         LineChart lineChart = binding.progressChart;
         chart = new ProgressLineChart(lineChart);

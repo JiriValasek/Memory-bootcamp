@@ -1,8 +1,7 @@
-package com.example.memorybootcamp.ui.challenges.faces.faceslist;
+package com.example.memorybootcamp.ui.challenges.cards;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -17,20 +16,17 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memorybootcamp.R;
-import com.example.memorybootcamp.ui.challenges.faces.faceslist.face.FaceContent;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static com.example.memorybootcamp.ui.challenges.faces.faceslist.face.FaceContent.deleteSavedImages;
+public class CardListRecyclerViewAdapter extends RecyclerView.Adapter<CardListRecyclerViewAdapter.ViewHolder> {
 
-public class FaceListRecyclerViewAdapter extends RecyclerView.Adapter<FaceListRecyclerViewAdapter.ViewHolder> {
+    private final List<CardContent.CardItem> mValues;
+    private final boolean editable;
 
-    private final List<FaceContent.FaceItem> mValues;
-    private boolean editable;
-
-    public FaceListRecyclerViewAdapter(List<FaceContent.FaceItem> items, boolean editable) {
+    public CardListRecyclerViewAdapter(List<CardContent.CardItem> items, boolean editable) {
         mValues = items;
         this.editable = editable;
     }
@@ -45,30 +41,31 @@ public class FaceListRecyclerViewAdapter extends RecyclerView.Adapter<FaceListRe
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.face, parent, false);
+                .inflate(R.layout.card, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Log.d("TEST B"," " + mValues.get(position).faceName);
+        Log.d("TEST B"," " + mValues.get(position).cardName);
         holder.mItem = mValues.get(position);
-        Bitmap bm = BitmapFactory.decodeFile(holder.mItem.uri.getPath());
-        holder.mImageView.setImageBitmap(bm);
-        holder.mFaceNameView.setText(holder.mItem.faceName);
+        Drawable d = holder.itemView.getResources().getDrawable(
+                mValues.get(position).imageId, holder.itemView.getContext().getTheme() );
+        holder.mImageView.setImageDrawable(d);
+        holder.mCardNameView.setText(holder.mItem.cardName);
         prepareTextEdit(holder, editable, position);
-        holder.mFaceNameView.invalidate();
+        holder.mCardNameView.invalidate();
     }
 
     private void prepareTextEdit(final ViewHolder holder, boolean editable, int position){
-        holder.mFaceNameView.setFocusable(editable);
-        holder.mFaceNameView.setCursorVisible(editable);
+        holder.mCardNameView.setFocusable(editable);
+        holder.mCardNameView.setCursorVisible(editable);
         if (editable){
-            holder.mFaceNameView.setInputType( InputType.TYPE_CLASS_TEXT |
+            holder.mCardNameView.setInputType( InputType.TYPE_CLASS_TEXT |
                     InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         }
         if(position == 0) {
-            holder.mFaceNameView.requestFocus();
+            holder.mCardNameView.requestFocus();
         }
     }
 
@@ -77,12 +74,11 @@ public class FaceListRecyclerViewAdapter extends RecyclerView.Adapter<FaceListRe
         return mValues.size();
     }
 
-    public List<FaceContent.FaceItem> getItems(){
+    public List<CardContent.CardItem> getItems(){
         return mValues;
     }
 
     public void clearItems(Context context){
-        deleteSavedImages(context);
         mValues.clear();
         this.notifyItemRangeRemoved(0, getItemCount());
     }
@@ -90,15 +86,15 @@ public class FaceListRecyclerViewAdapter extends RecyclerView.Adapter<FaceListRe
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final ImageView mImageView;
-        public final EditText mFaceNameView;
-        public FaceContent.FaceItem mItem;
+        public final EditText mCardNameView;
+        public CardContent.CardItem mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mImageView = (ImageView) view.findViewById(R.id.face_picture);
-            mFaceNameView = (EditText) view.findViewById(R.id.face_name);
-            mFaceNameView.addTextChangedListener(new TextWatcher(){
+            mImageView = (ImageView) view.findViewById(R.id.card_picture);
+            mCardNameView = (EditText) view.findViewById(R.id.card_name);
+            mCardNameView.addTextChangedListener(new TextWatcher(){
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -109,8 +105,10 @@ public class FaceListRecyclerViewAdapter extends RecyclerView.Adapter<FaceListRe
                 @Override
                 public void afterTextChanged(Editable s) {
                     if (editable) {
-                        mValues.get(getAdapterPosition()).faceName = new SpannableStringBuilder("");
-                        mValues.get(getAdapterPosition()).faceName.append(s.toString());
+                        Log.d( "MemoryBootcamp", +getAdapterPosition() + " " +
+                                getBindingAdapterPosition() + " " + getAbsoluteAdapterPosition());
+                        mValues.get(getAdapterPosition()).cardName = new SpannableStringBuilder("");
+                        mValues.get(getAdapterPosition()).cardName.append(s.toString());
                     }
                 }
             });
@@ -119,7 +117,7 @@ public class FaceListRecyclerViewAdapter extends RecyclerView.Adapter<FaceListRe
         @NotNull
         @Override
         public String toString() {
-            return super.toString() + " '" + mFaceNameView.getText() + "'";
+            return super.toString() + " '" + mCardNameView.getText() + "'";
         }
     }
 }

@@ -37,6 +37,7 @@ import com.example.memorybootcamp.generators.BinaryNumberGenerator;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 /*TODO use icons on toolbar and button
 https://www.flaticon.com/free-icon/thinking_1491165?term=brain&page=1&position=7&related_item_id=1491165
@@ -61,36 +62,40 @@ public class BinaryTrainingFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        // adding view binding
         viewModel = new ViewModelProvider(this).get(BinaryTrainingViewModel.class);
+        // setting up data binding
         binding = FragmentBinaryTrainingBinding.inflate(inflater, container, false);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
-
-        // get arguments
+        // getting arguments
         mode = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getMode();
         prepareTextEdit(mode.equals("recollection"));
         switch (mode) {
             case "task":
-                setupChallenge(mode.equals("task"), "Memorize in: ");
+                setupChallenge(true, "Memorize in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
                 break;
             case "recollection":
-                taskContent = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
-                setupChallenge(mode.equals("task"), "Answer in: ");
+                taskContent = BinaryTrainingFragmentArgs.fromBundle(getArguments())
+                        .getTaskContent();
+                setupChallenge(false, "Answer in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
                 break;
             case "results":
-                taskContent = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
+                taskContent = BinaryTrainingFragmentArgs.fromBundle(getArguments())
+                        .getTaskContent();
                 answers = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getAnswers();
                 processResults();
                 break;
         }
 
         // disable going back and settings
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        View view = getActivity().findViewById(R.id.action_settings);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
+                .setDisplayHomeAsUpEnabled(false);
+        View view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.GONE);
 
         return binding.getRoot();
@@ -106,9 +111,10 @@ public class BinaryTrainingFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
+                .setDisplayHomeAsUpEnabled(true);
         // return settings button
-        View view = getActivity().findViewById(R.id.action_settings);
+        View view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.VISIBLE);
         if (timer != null) timer.cancel();
         binding = null;
@@ -121,15 +127,17 @@ public class BinaryTrainingFragment extends Fragment {
         // Setting OK Button
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", (dialog, which) -> {
             NavDirections action = BinaryTrainingFragmentDirections.actionBinaryTrainingToBinary();
-            Navigation.findNavController(getView()).navigate(action);
+            Navigation.findNavController(requireView()).navigate(action);
         });
         // Setting Cancel button
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", (dialog, which) -> alertDialog.dismiss());
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL",
+                (dialog, which) -> alertDialog.dismiss());
         alertDialog.show(); // Showing Alert Message
     }
 
     private void setupChallenge( boolean fillInTask, String timeOutTitle){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(requireContext());
 
         // Setup challenge
         if (fillInTask) {
@@ -153,7 +161,7 @@ public class BinaryTrainingFragment extends Fragment {
                     getString(R.string.binary_answer_default));
         }
         long timeMs = Math.round(Float.parseFloat(time)*60*1000);
-        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
         timer = new CountDownTimer( timeMs, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -161,10 +169,11 @@ public class BinaryTrainingFragment extends Fragment {
                 long seconds = (millisUntilFinished / 1000) % 60;
                 long minutes = (millisUntilFinished / (60*1000)) % 60;
                 long hours = (millisUntilFinished / (60*60*1000));
-                String time = String.format(Locale.US,"%02d:%02d:%02d", hours, minutes, seconds);
+                String time = String.format(
+                        Locale.US,"%02d:%02d:%02d", hours, minutes, seconds);
                 SpannableString lastPart = new SpannableString(time);
-                firstPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.white)), 0, firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                lastPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.red)), 0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                firstPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.white)), 0, firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                lastPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.red)), 0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 toolbar.setTitle(TextUtils.concat(firstPart, lastPart));
             }
 
@@ -173,9 +182,13 @@ public class BinaryTrainingFragment extends Fragment {
         timer.start();
     }
 
+    /**
+     * Method processing and showing results.
+     */
     private void processResults() {
-        correctCount = 0; // correct
-        SpannableString letter;
+        // coloring the answer if it matches with the task i.e. text to remember.
+        correctCount = 0;
+        SpannableString letter; // letter to be colored and added to the shown text
         SpannableStringBuilder evaluatedText = new SpannableStringBuilder("");
         for (int i=0; i < taskContent[0].length(); i++){
             if (answers[0].length() > i){
@@ -197,22 +210,31 @@ public class BinaryTrainingFragment extends Fragment {
             evaluatedText.append(letter);
         }
         viewModel.setChallengeText(evaluatedText);
-        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        // setting up toolbar
+        Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Your Results");
+        // setting up view description
         setDescription();
+        // setting up button text
         viewModel.setButtonText("Back to binary stats");
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        // changing last challenge to binary for quick navigation
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(requireContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.last_challenge_key), getString(R.string.challenge_binary));
         editor.apply();
         editor.commit();
-
-        ResultViewModel mResultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
+        // updating statistics
+        ResultViewModel mResultViewModel = new ViewModelProvider(this)
+                .get(ResultViewModel.class);
         mResultViewModel.update("binary", correctCount, taskContent[0].length());
         mResultViewModel.leaveOnlyOneBestOfTheDay("binary");
     }
 
+    /**
+     * Prepare challengeText TextEdit to be editable or not according to the current view mode.
+     * @param editable - should it be editable (is mode recollection).
+     */
     private void prepareTextEdit(boolean editable){
         binding.challengeText.setFocusable(editable);
         binding.challengeText.setCursorVisible(editable);
@@ -223,6 +245,9 @@ public class BinaryTrainingFragment extends Fragment {
         }
     }
 
+    /**
+     * Method that makes user confirm going back to challenge overview.
+     */
     private void redirectBack() {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -231,12 +256,18 @@ public class BinaryTrainingFragment extends Fragment {
                         "Do you really wish to stop your Training?");
             }
         };
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+        requireActivity().getOnBackPressedDispatcher()
+                .addCallback(getViewLifecycleOwner(), callback);
     }
 
+    /**
+     * Navigation function based on current view mode (state).
+     */
     private void exitFunction() {
+        // select based on current view mode
         switch (mode) {
             case "task":
+                // go to waiting and bring task along to compare it with answers
                 exitAction = BinaryTrainingFragmentDirections.actionBinaryTrainingToWaiting();
                 ((BinaryTrainingFragmentDirections.ActionBinaryTrainingToWaiting) exitAction)
                         .setChallengeType("binary");
@@ -245,7 +276,7 @@ public class BinaryTrainingFragment extends Fragment {
                         .setBinaryTaskContent(task);
                 break;
             case "recollection":
-
+                // go to showing results and bring both task and answers along
                 exitAction = BinaryTrainingFragmentDirections.actionBinaryTrainingSelf();
                 String[] answer = {String.valueOf(binding.challengeText.getText())};
                 ((BinaryTrainingFragmentDirections.ActionBinaryTrainingSelf) exitAction)
@@ -256,14 +287,18 @@ public class BinaryTrainingFragment extends Fragment {
                         .setTaskContent(taskContent);
                 break;
             case "results":
+                // go to overview
                 exitAction = BinaryTrainingFragmentDirections.actionBinaryTrainingToBinary();
         }
-        Navigation.findNavController(getView()).navigate(exitAction);
+        Navigation.findNavController(requireView()).navigate(exitAction);
     }
 
+    /**
+     * Make a result summary and set it to the view description.
+     */
     private void setDescription(){
         TypedValue typedValue = new TypedValue();
-        getContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
+        requireContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
         @ColorInt int foregroundColor = typedValue.data;
         SpannableStringBuilder description = new SpannableStringBuilder();
         SpannableString text = new SpannableString("These are ");

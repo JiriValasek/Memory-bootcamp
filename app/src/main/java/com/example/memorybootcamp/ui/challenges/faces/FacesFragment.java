@@ -39,11 +39,11 @@ public class FacesFragment extends Fragment implements Callback<Faces> {
 
         binding = FragmentChallengeBinding.inflate(inflater, container, false);
         viewModel = new ViewModelProvider(this).get(FacesViewModel.class);
-        viewModel.setHeader(getActivity().getString(R.string.faces_challenge_header));
+        viewModel.setHeader(requireActivity().getString(R.string.faces_challenge_header));
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         String size = sharedPreferences.getString(getString(R.string.faces_size_key), getString(R.string.faces_size_default));
 
         FaceRetriever faceRetriever = new FaceRetriever();
@@ -60,7 +60,7 @@ public class FacesFragment extends Fragment implements Callback<Faces> {
             FacesFragmentDirections.ActionFacesToFacesTraining action =
                     FacesFragmentDirections.actionFacesToFacesTraining();
             action.setTaskContent(viewModel.getFaces().getValue());
-            Navigation.findNavController(getView()).navigate(action);
+            Navigation.findNavController(requireView()).navigate(action);
         });
 
         // Setup graph
@@ -95,10 +95,9 @@ public class FacesFragment extends Fragment implements Callback<Faces> {
 
     @Override
     public void onResponse(@NotNull Call<Faces> call,@NotNull Response<Faces> response) {
-        if (response != null && response.body() != null) {
+        if (response.body() != null) {
                 Log.d("MEMORYBOOTCAMP", "Faces recieved." );
-
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.requireContext());
                 String size = sharedPreferences.getString(getString(R.string.faces_size_key), getString(R.string.faces_size_default));
                 String time = sharedPreferences.getString(getString(R.string.faces_time_key), getString(R.string.faces_size_default));
                 viewModel.setDescription(getDescription(time, size));

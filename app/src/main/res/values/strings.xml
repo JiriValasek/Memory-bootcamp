@@ -42,7 +42,7 @@
     <string name="challenge_faces">faces</string>
     <string name="challenge_cards">cards</string>
 
-    <!-- Binary Challange -->
+    <!-- Binary Challenge -->
     <string name="binary_title">Binary challenge settings</string>
     <string name="binary_size_title">Challenge size</string>
     <string name="binary_size_key">binary_size</string>
@@ -57,7 +57,7 @@
     <string name="binary_answer_key">binary_answer</string>
     <string name="binary_answer_default">3</string>
 
-    <!-- Numbers Challange -->
+    <!-- Numbers Challenge -->
     <string name="numbers_title">Number challenge settings</string>
     <string name="numbers_size_title">Challenge size</string>
     <string name="numbers_size_key">numbers_size</string>
@@ -72,7 +72,7 @@
     <string name="numbers_answer_key">numbers_answer</string>
     <string name="numbers_answer_default">3</string>
 
-    <!-- Faces Challange -->
+    <!-- Faces Challenge -->
     <string name="faces_title">Faces challenge settings</string>
     <string name="faces_size_title">Challenge size</string>
     <string name="faces_size_key">faces_size</string>
@@ -86,6 +86,21 @@
     <string name="faces_answer_title">Time to answer</string>
     <string name="faces_answer_key">faces_answer</string>
     <string name="faces_answer_default">3</string>
+
+    <!-- Cards Challenge -->
+    <string name="cards_title">Cards challenge settings</string>
+    <string name="cards_size_title">Challenge size</string>
+    <string name="cards_size_key">cards_size</string>
+    <string name="cards_size_default">20</string>
+    <string name="cards_time_title">Time to memorize</string>
+    <string name="cards_time_key">cards_memorize</string>
+    <string name="cards_time_default">3</string>
+    <string name="cards_wait_title">Time to recollection</string>
+    <string name="cards_wait_key">cards_wait</string>
+    <string name="cards_wait_default">3</string>
+    <string name="cards_answer_title">Time to answer</string>
+    <string name="cards_answer_key">cards_answer</string>
+    <string name="cards_answer_default">3</string>
 
     <!-- Legal information -->
     <string name="os_notices">Open Source Notices</string>
@@ -121,7 +136,9 @@
     <string name="waiting_challenge_type_icon_description">Challenge icon during waiting</string>
     <string name="chart_xaxis_label">Time from the first practice [days]</string>
     <string name="faces_challenge_face_image">Face to remember</string>
+    <string name="cards_challenge_card_image">Face to remember</string>
     <string name="faces_challenge_face_hint">Name of a person</string>
+    <string name="cards_challenge_card_hint">Name of a person</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

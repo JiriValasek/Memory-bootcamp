@@ -57,6 +57,9 @@
         <action
             android:id="@+id/action_cards_to_settings"
             app:destination="@id/settings" />
+        <action
+            android:id="@+id/action_cards_to_cards_training"
+            app:destination="@id/cards_training" />
     </fragment>
 
     <fragment
@@ -299,6 +302,69 @@
             <argument
                 android:name="answers"
                 app:argType="string[]"
+                app:nullable="true"
+                android:defaultValue="@null" />
+        </action>
+    </fragment>
+    
+    <fragment
+        android:id="@+id/cards_training"
+        android:name="com.example.memorybootcamp.ui.challenges.cards.CardsTrainingFragment"
+        android:label="CardsTrainingFragment"
+        android:layout="@layout/fragment_cards_training">
+        <!-- modes: task, recollection, results -->
+        <argument
+            android:name="mode"
+            app:argType="string"
+            android:defaultValue="task" />
+        <argument
+            android:name="answers"
+            app:argType="com.example.memorybootcamp.ui.challenges.cards.Cards"
+            app:nullable="true"
+            android:defaultValue="@null"
+            />
+        <argument
+            android:name="task_content"
+            app:argType="com.example.memorybootcamp.ui.challenges.cards.Cards"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <action
+            android:id="@+id/action_cards_training_to_waiting"
+            app:destination="@id/waiting">
+            <argument
+                android:name="challengeType"
+                app:argType="string"
+                android:defaultValue="cards" />
+            <argument
+                android:name="cards_task_content"
+                app:argType="com.example.memorybootcamp.ui.challenges.cards.Cards"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
+        <action
+            android:id="@+id/action_cards_training_to_cards"
+            app:destination="@id/cards"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/cards"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_cards_training_self"
+            app:destination="@id/cards_training"
+            app:launchSingleTop="true"
+            app:popUpTo="@+id/cards_training"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="results" />
+            <argument
+                android:name="task_content"
+                app:argType="com.example.memorybootcamp.ui.challenges.cards.Cards"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+            <argument
+                android:name="answers"
+                app:argType="com.example.memorybootcamp.ui.challenges.cards.Cards"
                 app:nullable="true"
                 android:defaultValue="@null" />
         </action>

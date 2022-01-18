@@ -42,8 +42,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.memorybootcamp.R;
 import com.example.memorybootcamp.database.ResultViewModel;
 import com.example.memorybootcamp.databinding.FragmentFacesTrainingBinding;
-import com.example.memorybootcamp.ui.challenges.faces.faceslist.FaceListRecyclerViewAdapter;
-import com.example.memorybootcamp.ui.challenges.faces.faceslist.face.FaceContent;
 import com.example.memorybootcamp.web.faceretrival.Faces;
 import com.example.memorybootcamp.web.faceretrival.Name;
 import com.example.memorybootcamp.web.faceretrival.Picture;
@@ -53,6 +51,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Maybe switch to glide - inspire by tutorials:
@@ -107,11 +106,13 @@ public class FacesTrainingFragment extends Fragment {
                 setupChallenge(mode.equals(TASK), "Memorize in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
-                downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+                downloadManager = (DownloadManager) requireActivity()
+                        .getSystemService(Context.DOWNLOAD_SERVICE);
                 onComplete = new DownloadReceiver();
-                getContext().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+                requireContext().registerReceiver(onComplete,
+                        new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
                 break;
-            case "recollection":
+            case RECOLLECTION:
                 taskContent = FacesTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
                 setupChallenge(mode.equals(TASK), "Answer in: ");
                 redirectBack();
@@ -125,8 +126,9 @@ public class FacesTrainingFragment extends Fragment {
         setupRecyclerView();
 
         // disable going back and settings
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        view = getActivity().findViewById(R.id.action_settings);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
+                .setDisplayHomeAsUpEnabled(false);
+        view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.GONE);
 
         return binding.getRoot();
@@ -141,7 +143,7 @@ public class FacesTrainingFragment extends Fragment {
             startDownload();
         } else {
             Log.d("MEMORYBOOTCAMP", "Loading saved images.");
-            FaceContent.loadSavedImages(getContext(),false);
+            FaceContent.loadSavedImages(requireContext(),false);
             if (mode.equals(RESULTS)) {
                 showResults();
             }
@@ -152,9 +154,10 @@ public class FacesTrainingFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
+                .setDisplayHomeAsUpEnabled(true);
         // return settings button
-        View view = getActivity().findViewById(R.id.action_settings);
+        View view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.VISIBLE);
         if (timer != null) timer.cancel();
         binding = null;
@@ -164,13 +167,14 @@ public class FacesTrainingFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if ( onComplete != null) getContext().unregisterReceiver(onComplete);
+        if ( onComplete != null) requireContext().unregisterReceiver(onComplete);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if ( onComplete != null) getContext().registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        if ( onComplete != null) requireContext().registerReceiver(onComplete,
+                new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     public void showAlertDialog(Context context, String title, String message) {
@@ -180,15 +184,17 @@ public class FacesTrainingFragment extends Fragment {
         // Setting OK Button
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", (dialog, which) -> {
             NavDirections action = FacesTrainingFragmentDirections.actionFacesTrainingToFaces();
-            Navigation.findNavController(getView()).navigate(action);
+            Navigation.findNavController(requireView()).navigate(action);
         });
         // Setting Cancel button
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", (dialog, which) -> alertDialog.dismiss());
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL",
+                (dialog, which) -> alertDialog.dismiss());
         alertDialog.show(); // Showing Alert Message
     }
 
     private void setupChallenge( boolean fillInTask, String timeOutTitle){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(requireContext());
 
         // Setup timer
         String time;
@@ -198,7 +204,7 @@ public class FacesTrainingFragment extends Fragment {
             time = sharedPreferences.getString(getString(R.string.faces_answer_key), getString(R.string.faces_answer_default));
         }
         long timeMs = Math.round(Float.parseFloat(time)*60*1000);
-        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
         timer = new CountDownTimer( timeMs, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -206,10 +212,15 @@ public class FacesTrainingFragment extends Fragment {
                 long seconds = (millisUntilFinished / 1000) % 60;
                 long minutes = (millisUntilFinished / (60*1000)) % 60;
                 long hours = (millisUntilFinished / (60*60*1000));
-                String time = String.format(Locale.US,"%02d:%02d:%02d", hours, minutes, seconds);
+                String time = String.format(
+                        Locale.US,"%02d:%02d:%02d", hours, minutes, seconds);
                 SpannableString lastPart = new SpannableString(time);
-                firstPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.white)), 0, firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                lastPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.red)), 0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                firstPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(),
+                        R.color.white)), 0, firstPart.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                lastPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(),
+                        R.color.red)), 0, lastPart.length(),
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 toolbar.setTitle(TextUtils.concat(firstPart, lastPart));
             }
 
@@ -234,30 +245,35 @@ public class FacesTrainingFragment extends Fragment {
             }
             for(int i=0; i < answers.getResults().size(); i++){
                 answerResult = answers.getResults().get(i);
+                assert taskResult != null;
                 if (answerResult.getPicture().equals(taskResult.getPicture())){
                     break;
                 }
             }
+            assert answerResult != null;
             if (answerResult.getName().toString().equals(taskResult.getName().toString())){
                 correctCount++;
             }
             item.faceName = getColoredAnswer(taskResult.getName().toString(),
                     answerResult.getName().toString());
             recyclerViewAdapter.notifyDataSetChanged();
-            Log.d("TEST", taskResult.getName().toString() + " -> " + answerResult.getName().toString() );
+            Log.d("TEST",
+                    taskResult.getName().toString() + " -> " + answerResult.getName().toString() );
         }
-        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Your Results");
         setDescription();
         viewModel.setButtonText("Back to faces stats");
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(requireContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.last_challenge_key), getString(R.string.challenge_faces));
         editor.apply();
         editor.commit();
 
-        ResultViewModel mResultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
+        ResultViewModel mResultViewModel = new ViewModelProvider(this)
+                .get(ResultViewModel.class);
         mResultViewModel.update("faces", correctCount, taskContent.getResults().size());
         mResultViewModel.leaveOnlyOneBestOfTheDay("faces");
     }
@@ -299,7 +315,8 @@ public class FacesTrainingFragment extends Fragment {
                         "Do you really wish to stop your Training?");
             }
         };
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+        requireActivity().getOnBackPressedDispatcher()
+                .addCallback(getViewLifecycleOwner(), callback);
     }
 
     private void exitFunction() {
@@ -324,12 +341,11 @@ public class FacesTrainingFragment extends Fragment {
                 exitAction = FacesTrainingFragmentDirections.actionFacesTrainingToFaces();
                 recyclerViewAdapter.clearItems(getContext());
         }
-        Navigation.findNavController(getView()).navigate(exitAction);
+        Navigation.findNavController(requireView()).navigate(exitAction);
     }
 
     private Faces retrieveAnswers(){
         String title, itemName;
-        String[] guessedName;
         Result res = null;
         List<FaceContent.FaceItem> items = recyclerViewAdapter.getItems();
         Faces answers = new Faces(new ArrayList<>(), taskContent.getInfo());
@@ -337,7 +353,8 @@ public class FacesTrainingFragment extends Fragment {
             itemName = FaceContent.getFaceNameFromUri(item.uri);
             for(int i=0; i < taskContent.getResults().size(); i++){
                 res = taskContent.getResults().get(i);
-                String resultName = res.getName().getTitle() + " " + res.getName().getFirst() + " " +
+                String resultName = res.getName().getTitle() +
+                        " " + res.getName().getFirst() + " " +
                         res.getName().getLast();
                 if (itemName.equals(resultName)){
                     break;
@@ -355,7 +372,8 @@ public class FacesTrainingFragment extends Fragment {
 
     private void setDescription(){
         TypedValue typedValue = new TypedValue();
-        getContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
+        requireContext().getTheme()
+                .resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
         @ColorInt int foregroundColor = typedValue.data;
         String text;
         SpannableStringBuilder description = new SpannableStringBuilder();
@@ -386,7 +404,7 @@ public class FacesTrainingFragment extends Fragment {
             Result res = taskContent.getResults().get(i);
             String name = res.getName().toString();
             Log.d("MEMORYBOOTCAMP", "Downloading " + name);
-            getActivity().runOnUiThread(() -> {
+            requireActivity().runOnUiThread(() -> {
                 progressBar.setVisibility(View.VISIBLE);
                 FaceContent.downloadImage(downloadManager, getContext(),
                         res.getPicture().getLarge(), name);
@@ -407,6 +425,7 @@ public class FacesTrainingFragment extends Fragment {
                                 FaceContent.ITEMS, mode.equals("recollection")));
                 recyclerViewAdapter = (FaceListRecyclerViewAdapter) recyclerView.getAdapter();
                 if (mode.equals(TASK)) {
+                    assert recyclerViewAdapter != null;
                     recyclerViewAdapter.clearItems(getContext());
                 }
             }
@@ -417,7 +436,6 @@ public class FacesTrainingFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             Log.d("MEMORYBOOTCAMP","Download received.");
             String filePath="";
-            String url= "";
             DownloadManager.Query q = new DownloadManager.Query();
             q.setFilterById(intent.getExtras().getLong(DownloadManager.EXTRA_DOWNLOAD_ID));
             Cursor c = downloadManager.query(q);
@@ -440,13 +458,13 @@ public class FacesTrainingFragment extends Fragment {
 
 
     private void downloadFailed() {
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(requireContext()).create();
         alertDialog.setTitle("Download failed"); // Setting Dialog Title
         alertDialog.setMessage("Unfortunately, download failed, pleas try it later."); // Setting Dialog Message
         // Setting OK Button
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", (dialog, which) -> {
             NavDirections action = FacesTrainingFragmentDirections.actionFacesTrainingToFaces();
-            Navigation.findNavController(getView()).navigate(action);
+            Navigation.findNavController(requireView()).navigate(action);
         });
     }
 

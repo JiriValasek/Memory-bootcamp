@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:padding="4dp">
+
+    <ImageView
+        android:id="@+id/card_picture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/cards_challenge_card_image"
+        android:padding="2dp"/>
+
+    <EditText
+        android:id="@+id/card_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:scrollHorizontally="false"
+        android:layout_gravity="center_horizontal|top"
+        android:textAlignment="center"
+        android:inputType="textNoSuggestions"
+        android:singleLine="true"
+        android:text=""
+        android:hint="@string/cards_challenge_card_hint"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:importantForAutofill="no"/>
+
+</LinearLayout>

@@ -13,6 +13,7 @@ import com.example.memorybootcamp.R;
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
@@ -20,7 +21,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
         prepareChallengePreferences();
-        Preference button = findPreference(getString(R.string.os_key));
+        Preference button = Objects.requireNonNull(findPreference(getString(R.string.os_key)));
         button.setOnPreferenceClickListener(preference -> {
             Intent intent = new Intent(getContext(), OssLicensesMenuActivity.class);
             startActivity(intent);
@@ -29,23 +30,23 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void prepareChallengePreferences(){
-        int[] timeKeys = {R.string.binary_time_key, R.string.faces_time_key, R.string.numbers_time_key};
-        int[] waitKeys = {R.string.binary_wait_key, R.string.faces_wait_key, R.string.numbers_wait_key};
-        int[] answerKeys = {R.string.binary_answer_key, R.string.faces_answer_key, R.string.numbers_answer_key};
-        int[] sizeKeys = {R.string.binary_size_key, R.string.faces_size_key, R.string.numbers_size_key};
-        String[] sizeSuffices = {" bits", " faces", "numbers"};
+        int[] timeKeys = {R.string.binary_time_key, R.string.faces_time_key, R.string.numbers_time_key, R.string.cards_time_key};
+        int[] waitKeys = {R.string.binary_wait_key, R.string.faces_wait_key, R.string.numbers_wait_key, R.string.cards_wait_key};
+        int[] answerKeys = {R.string.binary_answer_key, R.string.faces_answer_key, R.string.numbers_answer_key, R.string.cards_answer_key};
+        int[] sizeKeys = {R.string.binary_size_key, R.string.faces_size_key, R.string.numbers_size_key, R.string.cards_size_key};
+        String[] sizeSuffices = {" bits", " faces", "numbers", "cards"};
 
         for (int i = 0; i < timeKeys.length; i++) {
             prepareSize(sizeKeys[i], sizeSuffices[i] );
-            prepareBinaryTime(timeKeys[i]);
-            prepareBinaryWait(waitKeys[i]);
-            prepareBinaryAnswer(answerKeys[i]);
+            prepareTime(timeKeys[i]);
+            prepareWait(waitKeys[i]);
+            prepareAnswer(answerKeys[i]);
         }
     }
 
     private void prepareSize(int sizeKeyId, String suffix){
         EditTextPreference editTextPreference =
-                getPreferenceManager().findPreference(getString(sizeKeyId));
+                Objects.requireNonNull(getPreferenceManager().findPreference(getString(sizeKeyId)));
         editTextPreference.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER));
         editTextPreference.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -70,21 +71,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
 
-    private void prepareBinaryTime(int timeKeyId){
+    private void prepareTime(int timeKeyId){
         EditTextPreference editTextPreference =
-                getPreferenceManager().findPreference(getString(timeKeyId));
+                Objects.requireNonNull(getPreferenceManager().findPreference(getString(timeKeyId)));
         setupTimePreference(editTextPreference, "Time to memorize (minutes)");
     }
 
-    private void prepareBinaryWait(int waitKeyId){
+    private void prepareWait(int waitKeyId){
         EditTextPreference editTextPreference =
-                getPreferenceManager().findPreference(getString(waitKeyId));
+                Objects.requireNonNull(getPreferenceManager().findPreference(getString(waitKeyId)));
         setupTimePreference(editTextPreference, "Time before recollection (minutes)");
     }
 
-    private void prepareBinaryAnswer(int answerKeyId){
+    private void prepareAnswer(int answerKeyId){
         EditTextPreference editTextPreference =
-                getPreferenceManager().findPreference(getString(answerKeyId));
+                Objects.requireNonNull(
+                        getPreferenceManager().findPreference(getString(answerKeyId)));
         setupTimePreference(editTextPreference, "Time to answer (minutes)");
     }
 

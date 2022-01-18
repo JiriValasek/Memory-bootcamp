@@ -2,10 +2,10 @@ package com.example.memorybootcamp.generators;
 
 import java.util.List;
 
+/** Interface for generators. */
 public interface IGenerator {
-    /**
-     * Generates a sequence of samples with given length
-     */
+
+    /** Method for generating objects. */
     default List<?> generateSequence(int length) {
         return null;
     }

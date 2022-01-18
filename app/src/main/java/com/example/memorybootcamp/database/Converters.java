@@ -7,16 +7,20 @@ import java.time.format.DateTimeFormatter;
 
 import kotlin.jvm.JvmStatic;
 
+/** Converting methods for the database. */
 public class Converters {
 
+    /** Time formatter for database. */
     private final DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
+    /** Formatter for converting from string to offset datetime. */
     @TypeConverter
     @JvmStatic
     public OffsetDateTime toOffsetDateTime(String value) {
         return formatter.parse(value, OffsetDateTime::from);
     }
 
+    /** Formatter for converting from offset datetime to string. */
     @TypeConverter
     @JvmStatic
     public String fromOffsetDateTime(OffsetDateTime date) {

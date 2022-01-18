@@ -24,14 +24,20 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Line chart showing current progress in a given challenge. */
 public class ProgressLineChart{
+    
+    /** Line chart object. */
     private final LineChart chart;
+    /** Data shown in the chart. */
     private LineData data;
+    /** Dataset of challenge progress. */
     private LineDataSet dataSet;
 
+    /** Constructor */
     public ProgressLineChart(LineChart lineChart) {
-        this.chart = lineChart;
-
+        // line chart setup
+        chart = lineChart;
         YAxis yAxis = this.chart.getAxisLeft();
         yAxis.setTypeface(Typeface.DEFAULT);
         yAxis.setTextSize(9f);
@@ -40,7 +46,7 @@ public class ProgressLineChart{
         yAxis.enableGridDashedLine(10f, 10f, 0f);
         yAxis.setDrawZeroLine(false);
         yAxis.setDrawLimitLinesBehindData(false);
-
+        // x-axis setup
         chart.getAxisRight().setEnabled(false);
         chart.getLegend().setEnabled(false);
         XAxis xAxis = chart.getXAxis();
@@ -50,20 +56,22 @@ public class ProgressLineChart{
         chart.setTouchEnabled(true);
         chart.setPinchZoom(true);
         chart.animateY(1400, Easing.EaseInOutQuad);
-
+        // initializations
         initializeValues();
         initializeColors();
     }
 
+    /** Initialize values for the graph. */
     public void initializeValues() {
         ArrayList<Entry> entries = new ArrayList<>();
-        if (chart.getData() != null &&
-                chart.getData().getDataSetCount() > 0) {
+        if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
+            // update data if graph exits
             dataSet = (LineDataSet) chart.getData().getDataSetByIndex(0);
             dataSet.setValues(entries);
             chart.getData().notifyDataChanged();
             chart.notifyDataSetChanged();
         } else {
+            // update graph properties of an existing graph
             dataSet = new LineDataSet(entries, "Data");
             dataSet.setDrawIcons(false);
             dataSet.setLineWidth(1f);
@@ -74,7 +82,6 @@ public class ProgressLineChart{
             dataSet.setFormLineWidth(1f);
             dataSet.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
             dataSet.setFormSize(15.f);
-
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(dataSet);
             data = new LineData(dataSets);
@@ -83,22 +90,27 @@ public class ProgressLineChart{
         chart.invalidate();
     }
 
+    /** Initialize colors of the graph. */
     public void initializeColors(){
-
+        // prepare colors
         TypedValue typedValue = new TypedValue();
-        chart.getContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
+        chart.getContext().getTheme()
+                .resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
         @ColorInt int foregroundColor = typedValue.data;
-        chart.getContext().getTheme().resolveAttribute(R.attr.colorSecondary, typedValue, true);
+        chart.getContext().getTheme()
+                .resolveAttribute(R.attr.colorSecondary, typedValue, true);
         @ColorInt int labelsColor = typedValue.data;
-        chart.getContext().getTheme().resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true);
+        chart.getContext().getTheme()
+                .resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true);
         @ColorInt int lineColor = typedValue.data;
-
+        // set colors for axes, web and legend
         chart.getXAxis().setTextColor(foregroundColor);
         chart.getXAxis().setGridColor(lineColor);
         chart.getXAxis().setAxisLineColor(lineColor);
         chart.getAxisLeft().setTextColor(foregroundColor);
         chart.getAxisLeft().setGridColor(lineColor);
         chart.getAxisLeft().setAxisLineColor(lineColor);
+        // set colors for plots
         if (Utils.getSDKInt() >= 18) {
             //Drawable drawable = ContextCompat.getDrawable(this, R.drawable.fade_blue);
             GradientDrawable gd = new GradientDrawable(
@@ -115,22 +127,23 @@ public class ProgressLineChart{
         dataSet.setHighLightColor(labelsColor);
     }
 
-
+    /** Update graph with new values. */
     public void updateValues(List<ChallengeResult> results) {
+        // prepare plot data
         ArrayList<Entry> entries = new ArrayList<>();
-
         results.sort((r1, r2) -> r1.getDate().compareTo(r2.getDate()));
         for (ChallengeResult r : results) {
             Duration duration = Duration.between(results.get(0).getDate(), r.getDate());
             entries.add(new Entry(duration.toDays(), r.getScore()));
         }
-        if (chart.getData() != null &&
-                chart.getData().getDataSetCount() > 0) {
+        if (chart.getData() != null && chart.getData().getDataSetCount() > 0) {
+            // update data if graph exits
             dataSet = (LineDataSet) chart.getData().getDataSetByIndex(0);
             dataSet.setValues(entries);
             chart.getData().notifyDataChanged();
             chart.notifyDataSetChanged();
         } else {
+            // update graph properties of an existing graph
             dataSet = new LineDataSet(entries, "Sample Data");
             dataSet.setDrawIcons(false);
             dataSet.setLineWidth(1f);
@@ -141,7 +154,6 @@ public class ProgressLineChart{
             dataSet.setFormLineWidth(1f);
             dataSet.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
             dataSet.setFormSize(15.f);
-
             ArrayList<ILineDataSet> dataSets = new ArrayList<>();
             dataSets.add(dataSet);
             data = new LineData(dataSets);
