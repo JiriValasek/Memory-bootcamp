@@ -11,6 +11,7 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,27 +40,35 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
 
-/*TODO use icons on toolbar and button
-https://www.flaticon.com/free-icon/thinking_1491165?term=brain&page=1&position=7&related_item_id=1491165
-https://www.flaticon.com/free-icon/idea_1491174?term=brain&page=1&position=34&related_item_id=1491174
-https://www.flaticon.com/free-icon/autism_1491171?term=brain&page=1&position=58&related_item_id=1491171
- */
-
+/** Fragment for training of binary numbers. */
 public class BinaryTrainingFragment extends Fragment {
 
+    /** Fragment mode for showing results. */
+    private static final String RESULTS = "results";
+    /** Fragment mode for memorization. */
+    private static final String TASK = "task";
+    /** Fragment mode for filling in memorized information. */
+    private static final String RECOLLECTION = "recollection";
+
+    /** Data-binding for the layout. */
     private FragmentBinaryTrainingBinding binding;
+    /** View model for maintainging data between restarts etc. */
     private BinaryTrainingViewModel viewModel;
+    /** Count-down timer for memorization and recollection. */
     private CountDownTimer timer;
+    /** Action to be executed after time is out. */
     private NavDirections exitAction;
+    /** Mode in which the fragment is. */
     private String mode;
+    /** Binary sequences shown during the memorization, and recollected answers. */
     private String[] taskContent, answers;
+    /** Number of correct results. */
     private int correctCount;
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-    }
-
+    /**
+     * "onCreateView" setting up a fragment, starting timer, changing redirect back,
+     * changing button text and hiding settings button.
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         // adding view binding
@@ -68,39 +77,40 @@ public class BinaryTrainingFragment extends Fragment {
         binding = FragmentBinaryTrainingBinding.inflate(inflater, container, false);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
-        // getting arguments
+        // get arguments from previous fragment
         mode = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getMode();
-        prepareTextEdit(mode.equals("recollection"));
+        prepareTextEdit(mode.equals(RECOLLECTION));
         switch (mode) {
-            case "task":
+            case TASK:
                 setupChallenge(true, "Memorize in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
                 break;
-            case "recollection":
+            case RECOLLECTION:
                 taskContent = BinaryTrainingFragmentArgs.fromBundle(getArguments())
                         .getTaskContent();
                 setupChallenge(false, "Answer in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
                 break;
-            case "results":
+            case RESULTS:
                 taskContent = BinaryTrainingFragmentArgs.fromBundle(getArguments())
                         .getTaskContent();
                 answers = BinaryTrainingFragmentArgs.fromBundle(getArguments()).getAnswers();
                 processResults();
                 break;
         }
-
         // disable going back and settings
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
                 .setDisplayHomeAsUpEnabled(false);
+        // hide settings button
         View view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.GONE);
 
         return binding.getRoot();
     }
 
+    /** "onViewCreated" changing mode button. */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -108,33 +118,56 @@ public class BinaryTrainingFragment extends Fragment {
         binding.endPracticeButton.setOnClickListener(v -> exitFunction());
     }
 
+    /** "onPause" stopping timer on to run out when fragment not active. */
+    @Override
+    public void onPause() {
+        Log.d("CTF", "onPause");
+        super.onPause();
+        // display settings button again
+        View view = requireActivity().findViewById(R.id.action_settings);
+        if (view != null) view.setVisibility(View.VISIBLE);
+        // stop timer
+        if (timer != null) timer.cancel();
+    }
+
+    /** "onResume" restarting timer when fragment became active again. */
+    @Override
+    public void onResume() {
+        Log.d("CTF", "onResume");
+        super.onResume();
+        // disable settings button again
+        View view = requireActivity().findViewById(R.id.action_settings);
+        if (view != null) view.setVisibility(View.GONE);
+        // restart timer
+        if (viewModel != null && viewModel.getRemainingTime() != null &&
+                viewModel.getRemainingTime().getValue() != null) {
+            /*if ( viewModel.getRemainingTime().getValue() <= 0) {
+                exitFunction();
+            } else */
+            if (timer != null) timer.cancel();
+            if (mode.equals(TASK)) {
+                setupChallenge(true,"Memorize in: ");
+            } else if (mode.equals(RECOLLECTION)){
+                setupChallenge(false,"Answer in: ");
+            }
+        }
+    }
+
+    /** "onDestroyView" showing setting button again and stopping timer. */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
                 .setDisplayHomeAsUpEnabled(true);
-        // return settings button
+        // display settings button again
         View view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.VISIBLE);
+        // stop timer
         if (timer != null) timer.cancel();
         binding = null;
     }
 
-    public void showAlertDialog(Context context, String title, String message) {
-        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle(title); // Setting Dialog Title
-        alertDialog.setMessage(message); // Setting Dialog Message
-        // Setting OK Button
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", (dialog, which) -> {
-            NavDirections action = BinaryTrainingFragmentDirections.actionBinaryTrainingToBinary();
-            Navigation.findNavController(requireView()).navigate(action);
-        });
-        // Setting Cancel button
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL",
-                (dialog, which) -> alertDialog.dismiss());
-        alertDialog.show(); // Showing Alert Message
-    }
-
+    /** Method setting up timer according to preferences. */
     private void setupChallenge( boolean fillInTask, String timeOutTitle){
         SharedPreferences sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(requireContext());
@@ -153,18 +186,25 @@ public class BinaryTrainingFragment extends Fragment {
 
         // Setup timer
         String time;
-        if (mode.equals("task")) {
+        if (mode.equals(TASK)) {
             time = sharedPreferences.getString(getString(R.string.binary_time_key),
                     getString(R.string.binary_time_default));
         } else {
             time = sharedPreferences.getString(getString(R.string.binary_answer_key),
                     getString(R.string.binary_answer_default));
         }
-        long timeMs = Math.round(Float.parseFloat(time)*60*1000);
+        long timeMs;
+        if (viewModel.getRemainingTime().getValue() == null) {
+            timeMs = Math.round(Float.parseFloat(time)*60*1000);
+        } else {
+            timeMs = viewModel.getRemainingTime().getValue();
+        }
+
         Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
         timer = new CountDownTimer( timeMs, 1000) {
 
             public void onTick(long millisUntilFinished) {
+                viewModel.setRemainingTime(millisUntilFinished);
                 SpannableString firstPart = new SpannableString(timeOutTitle);
                 long seconds = (millisUntilFinished / 1000) % 60;
                 long minutes = (millisUntilFinished / (60*1000)) % 60;
@@ -172,9 +212,17 @@ public class BinaryTrainingFragment extends Fragment {
                 String time = String.format(
                         Locale.US,"%02d:%02d:%02d", hours, minutes, seconds);
                 SpannableString lastPart = new SpannableString(time);
-                firstPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.white)), 0, firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                lastPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.red)), 0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                toolbar.setTitle(TextUtils.concat(firstPart, lastPart));
+                if (isAdded()){
+                    firstPart.setSpan(
+                            new ForegroundColorSpan(
+                                    ContextCompat.getColor(requireActivity(), R.color.white)),
+                            0, firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    lastPart.setSpan(
+                            new ForegroundColorSpan(
+                                    ContextCompat.getColor(requireActivity(), R.color.red)),
+                            0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toolbar.setTitle(TextUtils.concat(firstPart, lastPart));
+                }
             }
 
             public void onFinish() { exitFunction(); }
@@ -182,9 +230,7 @@ public class BinaryTrainingFragment extends Fragment {
         timer.start();
     }
 
-    /**
-     * Method processing and showing results.
-     */
+    /** Method processing and showing results. */
     private void processResults() {
         // coloring the answer if it matches with the task i.e. text to remember.
         correctCount = 0;
@@ -245,9 +291,7 @@ public class BinaryTrainingFragment extends Fragment {
         }
     }
 
-    /**
-     * Method that makes user confirm going back to challenge overview.
-     */
+    /** Method that makes user confirm going back to challenge overview. */
     private void redirectBack() {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -260,13 +304,27 @@ public class BinaryTrainingFragment extends Fragment {
                 .addCallback(getViewLifecycleOwner(), callback);
     }
 
-    /**
-     * Navigation function based on current view mode (state).
-     */
+    /** Method showing results from memorization practice. */
+    public void showAlertDialog(Context context, String title, String message) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setTitle(title); // Setting Dialog Title
+        alertDialog.setMessage(message); // Setting Dialog Message
+        // Setting OK Button
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", (dialog, which) -> {
+            NavDirections action = BinaryTrainingFragmentDirections.actionBinaryTrainingToBinary();
+            Navigation.findNavController(requireView()).navigate(action);
+        });
+        // Setting Cancel button
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL",
+                (dialog, which) -> alertDialog.dismiss());
+        alertDialog.show(); // Showing Alert Message
+    }
+
+    /** Method deciding on next fragment according to current mode and user action/timer. */
     private void exitFunction() {
         // select based on current view mode
         switch (mode) {
-            case "task":
+            case TASK:
                 // go to waiting and bring task along to compare it with answers
                 exitAction = BinaryTrainingFragmentDirections.actionBinaryTrainingToWaiting();
                 ((BinaryTrainingFragmentDirections.ActionBinaryTrainingToWaiting) exitAction)
@@ -275,27 +333,25 @@ public class BinaryTrainingFragment extends Fragment {
                 ((BinaryTrainingFragmentDirections.ActionBinaryTrainingToWaiting) exitAction)
                         .setBinaryTaskContent(task);
                 break;
-            case "recollection":
+            case RECOLLECTION:
                 // go to showing results and bring both task and answers along
                 exitAction = BinaryTrainingFragmentDirections.actionBinaryTrainingSelf();
                 String[] answer = {String.valueOf(binding.challengeText.getText())};
                 ((BinaryTrainingFragmentDirections.ActionBinaryTrainingSelf) exitAction)
-                        .setMode("results");
+                        .setMode(RESULTS);
                 ((BinaryTrainingFragmentDirections.ActionBinaryTrainingSelf) exitAction)
                         .setAnswers(answer);
                 ((BinaryTrainingFragmentDirections.ActionBinaryTrainingSelf) exitAction)
                         .setTaskContent(taskContent);
                 break;
-            case "results":
+            case RESULTS:
                 // go to overview
                 exitAction = BinaryTrainingFragmentDirections.actionBinaryTrainingToBinary();
         }
         Navigation.findNavController(requireView()).navigate(exitAction);
     }
 
-    /**
-     * Make a result summary and set it to the view description.
-     */
+    /** Make a result summary and set it to the view description. */
     private void setDescription(){
         TypedValue typedValue = new TypedValue();
         requireContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);

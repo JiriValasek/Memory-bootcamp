@@ -28,9 +28,12 @@ public class BinaryFragment extends Fragment {
     private FragmentChallengeBinding binding;
     /** View-binding to a view data. */
     private ChallengeViewModel viewModel;
+    /** View-binding to the database. */
     private ResultViewModel mResultViewModel;
+    /** Chart showing progress. */
     private ProgressLineChart chart;
 
+    /** "onCreateView" setting up fragment, and adding description for user.  */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         // adding view binding
@@ -53,6 +56,7 @@ public class BinaryFragment extends Fragment {
         return binding.getRoot();
     }
 
+    /** "onViewCreated" setting up the graph and button to start the challenge. */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -68,23 +72,26 @@ public class BinaryFragment extends Fragment {
                 results -> chart.updateValues(results));
     }
 
+    /** "onDestroyView" destroys binding as well. */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // remove binding
         binding = null;
     }
 
+    /** Method generating description string from preferences. */
     public String getDescription(String time, String size){
         // Get challenge description
         float parsedTime = Float.parseFloat(time);
-        int hours = Math.round(parsedTime / 60);
-        int minutes = Math.round(parsedTime % 60);
+        int hours = (int) Math.floor(((float) parsedTime) / 60);
+        int minutes = (int) Math.floor(((float) parsedTime) % 60);
         int seconds = (int) Math.round((parsedTime - Math.floor(parsedTime)) * 60);
         String description = "You have ";
         description += hours > 0 ? hours + "h " : "";
         description += minutes > 0 ? minutes + "m " : "";
         description += seconds > 0 ? seconds + "s " : "";
-        description += "to memorize " + size + " bits.";
+        description += "to memorize " + size + " cars.";
         return description;
     }
 }

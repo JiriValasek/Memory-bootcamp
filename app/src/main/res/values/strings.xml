@@ -16,6 +16,7 @@
     <string name="menu_faces">Faces</string>
     <string name="menu_binary_numbers">Binary numbers</string>
     <string name="menu_words">Words</string>
+    <string name="menu_settings">Settings</string>
 
     <!-- Preferences ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
     <string name="main_preferences_key">main_preferences</string>
@@ -136,9 +137,9 @@
     <string name="waiting_challenge_type_icon_description">Challenge icon during waiting</string>
     <string name="chart_xaxis_label">Time from the first practice [days]</string>
     <string name="faces_challenge_face_image">Face to remember</string>
-    <string name="cards_challenge_card_image">Face to remember</string>
+    <string name="cards_challenge_card_image">Card to remember</string>
     <string name="faces_challenge_face_hint">Name of a person</string>
-    <string name="cards_challenge_card_hint">Name of a person</string>
+    <string name="cards_challenge_card_hint">Name of a card</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

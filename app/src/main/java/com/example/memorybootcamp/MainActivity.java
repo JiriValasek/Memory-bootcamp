@@ -60,9 +60,11 @@ public class MainActivity extends AppCompatActivity {
         mAppBarConfiguration = new AppBarConfiguration.Builder(R.id.home)
                 .setOpenableLayout(drawer)
                 .build();
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
         NavController navController = navHostFragment.getNavController();
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI
+                .setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
         // initialize preferences
@@ -88,14 +90,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavController navController = Navigation
+                .findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
 
     public void onSettingsClicked(MenuItem item){
-        Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        Fragment currentFragment = navHostFragment == null? null : navHostFragment.getChildFragmentManager().getFragments().get(0);
+        Fragment navHostFragment = getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+        Fragment currentFragment = navHostFragment == null?
+                null : navHostFragment.getChildFragmentManager().getFragments().get(0);
         NavDirections action = null;
         if (currentFragment instanceof HomeFragment) {
             action = HomeFragmentDirections.actionHomeToSettings();
@@ -111,15 +116,18 @@ public class MainActivity extends AppCompatActivity {
             action = WordsFragmentDirections.actionWordsToSettings();
         }
         if (action!= null) {
-            Navigation.findNavController(currentFragment.getView()).navigate(action);
+            Navigation.findNavController(currentFragment.requireView()).navigate(action);
         }
     }
 
     private void onFabClicked(View view){
-        Fragment navHostFragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        Fragment currentFragment = navHostFragment == null? null : navHostFragment.getChildFragmentManager().getFragments().get(0);
+        Fragment navHostFragment = getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+        Fragment currentFragment = navHostFragment == null? null :
+                navHostFragment.getChildFragmentManager().getFragments().get(0);
         if (currentFragment instanceof HomeFragment) {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences sharedPreferences = PreferenceManager
+                    .getDefaultSharedPreferences(this);
             String last_challenge = sharedPreferences.getString(getString(R.string.last_challenge_key),
                     getString(R.string.last_challenge_default));
             NavDirections action = null;
@@ -139,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
             if (action != null) {
-                Navigation.findNavController(currentFragment.getView()).navigate(action);
+                Navigation.findNavController(currentFragment.requireView()).navigate(action);
             }
         }
 

@@ -4,14 +4,14 @@
 
     <objectAnimator
         android:propertyName="backgroundColor"
-        android:duration="2000"
+        android:duration="1000"
         android:valueFrom="@color/black"
         android:valueTo="@color/green_200"
         android:startOffset="500" />
 
     <objectAnimator
         android:propertyName="colorFilter"
-        android:duration="2000"
+        android:duration="1000"
         android:valueFrom="@color/black"
         android:valueTo="@color/transparent" />
 

@@ -10,10 +10,10 @@
         android:id="@+id/card_picture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:contentDescription="@string/cards_challenge_card_image"
-        android:padding="2dp"/>
+        android:contentDescription="@string/cards_challenge_card_image"/>
 
     <EditText
         android:id="@+id/card_name"

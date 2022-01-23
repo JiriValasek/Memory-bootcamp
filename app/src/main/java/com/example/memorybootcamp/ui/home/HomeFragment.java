@@ -17,34 +17,41 @@ import com.example.memorybootcamp.database.ResultViewModel;
 import com.github.mikephil.charting.charts.RadarChart;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+/** Home fragment showing all progress. */
 public class HomeFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
+    /** View-binding to a view data. */
+    private HomeViewModel viewModel;
+    /** View-binding to the database. */
     private ResultViewModel mResultViewModel;
+    /** Chart showing progress. */
     private ProgressRadarChart chart;
-    private final int NUMBER_OF_TYPES = 5;
 
+    /** "onCreateView" setting up fragment, and showing floating action button. */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        // adding view binding
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        // retrieving view binding for graph and database
         mResultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-
+        // setting up description for user
         final TextView textView = root.findViewById(R.id.text_home);
-        homeViewModel.setHeader(getActivity().getString(R.string.home_page_header));
-        homeViewModel.getHeader().observe(getViewLifecycleOwner(), textView::setText);
-
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        viewModel.setHeader(requireActivity().getString(R.string.home_page_header));
+        viewModel.getHeader().observe(getViewLifecycleOwner(), textView::setText);
+        // hiding fab
+        FloatingActionButton fab = requireActivity().findViewById(R.id.fab);
         if (fab.getVisibility() != View.VISIBLE) fab.setVisibility(View.VISIBLE);
 
         return root;
     }
 
+    /** "onViewCreated" setting up progress chart. */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RadarChart radarChart = getActivity().findViewById(R.id.home_chart);
+        RadarChart radarChart = requireActivity().findViewById(R.id.home_chart);
         chart = new ProgressRadarChart(radarChart);
         mResultViewModel.getBestResults().observe(getViewLifecycleOwner(),
                 bestResults -> chart.updateBests(bestResults));
@@ -52,11 +59,12 @@ public class HomeFragment extends Fragment {
                 weeksBestResults -> chart.updateWeeksBests(weeksBestResults));
     }
 
+    /** "onDestroyView" hiding FAB. */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        // show fab
+        FloatingActionButton fab = requireActivity().findViewById(R.id.fab);
         if (fab.getVisibility() != View.GONE) fab.setVisibility(View.GONE);
-        this.chart = null;
     }
 }

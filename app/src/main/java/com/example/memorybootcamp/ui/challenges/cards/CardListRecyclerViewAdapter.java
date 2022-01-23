@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.memorybootcamp.R;
@@ -21,22 +22,22 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class CardListRecyclerViewAdapter extends RecyclerView.Adapter<CardListRecyclerViewAdapter.ViewHolder> {
+/** Recycler view adapter holding cards. */
+public class CardListRecyclerViewAdapter
+        extends RecyclerView.Adapter<CardListRecyclerViewAdapter.ViewHolder> {
 
+    /** List of card items to be shown in view holders. */
     private final List<CardContent.CardItem> mValues;
+    /** Should editText be editable. */
     private final boolean editable;
 
+    /** Constructor */
     public CardListRecyclerViewAdapter(List<CardContent.CardItem> items, boolean editable) {
         mValues = items;
         this.editable = editable;
     }
 
-
-    @Override
-    public long getItemId(int position){return position;}
-
-    public int getItemViewType(int position){return position;}
-
+    /** Method preparing view holder. */
     @NotNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -45,18 +46,19 @@ public class CardListRecyclerViewAdapter extends RecyclerView.Adapter<CardListRe
         return new ViewHolder(view);
     }
 
+    /** Method setting up content of a view holder. */
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Log.d("TEST B"," " + mValues.get(position).cardName);
         holder.mItem = mValues.get(position);
-        Drawable d = holder.itemView.getResources().getDrawable(
-                mValues.get(position).imageId, holder.itemView.getContext().getTheme() );
+        Drawable d = ResourcesCompat.getDrawable(holder.itemView.getResources(),
+                mValues.get(position).imageId, holder.itemView.getContext().getTheme());
         holder.mImageView.setImageDrawable(d);
         holder.mCardNameView.setText(holder.mItem.cardName);
         prepareTextEdit(holder, editable, position);
         holder.mCardNameView.invalidate();
     }
 
+    /** Method preparing text edit according to a mode. */
     private void prepareTextEdit(final ViewHolder holder, boolean editable, int position){
         holder.mCardNameView.setFocusable(editable);
         holder.mCardNameView.setCursorVisible(editable);
@@ -64,31 +66,40 @@ public class CardListRecyclerViewAdapter extends RecyclerView.Adapter<CardListRe
             holder.mCardNameView.setInputType( InputType.TYPE_CLASS_TEXT |
                     InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         }
-        if(position == 0) {
-            holder.mCardNameView.requestFocus();
-        }
+        if(position == 0) { holder.mCardNameView.requestFocus(); }
     }
 
+    /** Method returning id of an element on a given position. */
     @Override
-    public int getItemCount() {
-        return mValues.size();
-    }
+    public long getItemId(int position){return position;}
+    /** Method returning number of items in a recycler view. */
+    @Override
+    public int getItemCount() { return mValues.size(); }
+    /** Method returning type of a view on a given position. */
+    public int getItemViewType(int position){return position;}
 
-    public List<CardContent.CardItem> getItems(){
-        return mValues;
-    }
+    /** Getter for items in a recycler view. */
+    public List<CardContent.CardItem> getItems(){ return mValues; }
 
+    /** Method for clearing items in a recycler view. */
     public void clearItems(Context context){
         mValues.clear();
         this.notifyItemRangeRemoved(0, getItemCount());
     }
 
+    /** View holder for cards with listener for text changes. */
     public class ViewHolder extends RecyclerView.ViewHolder {
+
+        /** View to be held. */
         public final View mView;
+        /** Image view with a card image. */
         public final ImageView mImageView;
+        /** Edit text with name of a card. */
         public final EditText mCardNameView;
+        /** Card item held in the holder. */
         public CardContent.CardItem mItem;
 
+        /** Constructor */
         public ViewHolder(View view) {
             super(view);
             mView = view;
@@ -102,18 +113,19 @@ public class CardListRecyclerViewAdapter extends RecyclerView.Adapter<CardListRe
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
+                /** Listener recording changed text into the item. */
                 @Override
                 public void afterTextChanged(Editable s) {
                     if (editable) {
-                        Log.d( "MemoryBootcamp", +getAdapterPosition() + " " +
-                                getBindingAdapterPosition() + " " + getAbsoluteAdapterPosition());
-                        mValues.get(getAdapterPosition()).cardName = new SpannableStringBuilder("");
-                        mValues.get(getAdapterPosition()).cardName.append(s.toString());
+                        mValues.get(getAbsoluteAdapterPosition()).cardName =
+                                new SpannableStringBuilder("");
+                        mValues.get(getAbsoluteAdapterPosition()).cardName.append(s.toString());
                     }
                 }
             });
         }
 
+        /** Method retrieving name of a card. */
         @NotNull
         @Override
         public String toString() {

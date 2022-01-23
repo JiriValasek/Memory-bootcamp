@@ -2,6 +2,7 @@ package com.example.memorybootcamp.ui.challenges.cards;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -36,126 +37,165 @@ import android.view.ViewGroup;
 import com.example.memorybootcamp.R;
 import com.example.memorybootcamp.database.ResultViewModel;
 import com.example.memorybootcamp.databinding.FragmentCardsTrainingBinding;
-import com.example.memorybootcamp.generators.CardsGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+/** Fragment for training card memorization. */
 public class CardsTrainingFragment extends Fragment {
 
-    private final String RESULTS = "results";
-    private final String TASK = "task";
-    private final String RECOLLECTION = "recollection";
+    /** Fragment mode for showing results. */
+    private static final String RESULTS = "results";
+    /** Fragment mode for memorization. */
+    private static final String TASK = "task";
+    /** Fragment mode for filling in memorized information. */
+    private static final String RECOLLECTION = "recollection";
+
+    /** Data binding for the layout. */
     private FragmentCardsTrainingBinding binding;
+    /** View model for maintaining data between restarts etc. */
     private CardsTrainingViewModel viewModel;
+    /** Static recycler view adapter for showing cards. */
     private CardListRecyclerViewAdapter recyclerViewAdapter;
+    /** Count-down timer for memorization and recollection. */
     private CountDownTimer timer;
+    /** Action to be executed after time is out. */
     private NavDirections exitAction;
+    /** Mode in which the fragment is. */
     private String mode;
+    /** Cards shown during the memorization, and recollected answers. */
     private Cards taskContent, answers;
+    /** Number of correct results. */
     private int correctCount;
 
-
-    // TODO divide name into title, first and last edittexts
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-    }
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    /**
+     * "onCreateView" setting up a fragment, starting timer, changing redirect back,
+     * changing button text and hiding settings button.
+     */
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        Log.d("CTF", "onCreate");
+        // adding view binding
         viewModel = new ViewModelProvider(this).get(CardsTrainingViewModel.class);
+        // setting up data binding
         binding = FragmentCardsTrainingBinding.inflate(inflater, container, false);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
-        View view;
-
-        // get arguments
+        // get arguments from previous fragment
         mode = CardsTrainingFragmentArgs.fromBundle(getArguments()).getMode();
+        taskContent = CardsTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
         switch (mode) {
             case TASK:
-                taskContent = CardsTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
-                setupChallenge(mode.equals(TASK), "Memorize in: ");
+                setupChallenge("Memorize in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
                 break;
             case RECOLLECTION:
-                taskContent = CardsTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
-                setupChallenge(mode.equals(TASK), "Answer in: ");
+                setupChallenge("Answer in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
                 break;
             case RESULTS:
-                taskContent = CardsTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
                 answers = CardsTrainingFragmentArgs.fromBundle(getArguments()).getAnswers();
                 break;
         }
         setupRecyclerView();
-
         // disable going back and settings
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
                 .setDisplayHomeAsUpEnabled(false);
-        view = requireActivity().findViewById(R.id.action_settings);
+        // hide settings button
+        View view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.GONE);
+
+        if (viewModel.getScreenOrientation().getValue() == -1) {
+            viewModel.setScreenOrientation(getResources().getConfiguration().orientation);
+        }
 
         return binding.getRoot();
     }
 
+    /** "onViewCreated" showing cards and changing mode button. */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Log.d("CTF", "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
-        // Add callback to start practice
+        // add callback to end mode of a practice
         binding.endPracticeButton.setOnClickListener(v -> exitFunction());
-        if ( !mode.equals(TASK)) {
-            Log.d("MEMORYBOOTCAMP", "Loading saved images.");
-            CardContent.loadCards(getContext(), taskContent, false);
-            if (mode.equals(RESULTS)) {
+        // show cards
+        if (viewModel.getScreenOrientation().getValue() !=
+                getResources().getConfiguration().orientation) {
+            viewModel.setScreenOrientation(getResources().getConfiguration().orientation);
+        } else {
+            if (mode.equals(TASK)) {
+                CardContent.loadCards(getActivity(), taskContent, true, true);
+            } else if (mode.equals(RESULTS)) {
+                CardContent.loadCards(getActivity(), taskContent, false, true);
                 showResults();
+            } else {
+                CardContent.loadCards(getActivity(), taskContent, false, false);
+            }
+        }
+        recyclerViewAdapter.notifyItemRangeInserted(0, taskContent.getCards().size());
+        Log.d("CTF", "Orientation - " + getResources().getConfiguration().orientation +
+                " - " + viewModel.getScreenOrientation().getValue());
+    }
+
+    /** "onPause" stopping timer on to run out when fragment not active. */
+    @Override
+    public void onPause() {
+        Log.d("CTF", "onPause");
+        super.onPause();
+        // display settings button again
+        View view = requireActivity().findViewById(R.id.action_settings);
+        if (view != null) view.setVisibility(View.VISIBLE);
+        // stop timer
+        if (timer != null) timer.cancel();
+    }
+
+    /** "onResume" restarting timer when fragment became active again. */
+    @Override
+    public void onResume() {
+        Log.d("CTF", "onResume");
+        super.onResume();
+        // disable settings button again
+        View view = requireActivity().findViewById(R.id.action_settings);
+        if (view != null) view.setVisibility(View.GONE);
+        // restart timer
+        if (viewModel != null && viewModel.getRemainingTime() != null &&
+                viewModel.getRemainingTime().getValue() != null) {
+            /*if ( viewModel.getRemainingTime().getValue() <= 0) {
+                exitFunction();
+            } else */
+            if (timer != null) timer.cancel();
+            if (mode.equals(TASK)) {
+                setupChallenge("Memorize in: ");
+            } else if (mode.equals(RECOLLECTION)){
+                setupChallenge("Answer in: ");
             }
         }
     }
 
+    /** "onDestroyView" showing setting button again and stopping timer. */
     @Override
     public void onDestroyView() {
+        Log.d("CTF","onDestroyView");
         super.onDestroyView();
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
                 .setDisplayHomeAsUpEnabled(true);
-        // return settings button
+        // display settings button again
         View view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.VISIBLE);
+        // stop timer
         if (timer != null) timer.cancel();
         binding = null;
     }
 
-    public void showAlertDialog(Context context, String title, String message) {
-        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle(title); // Setting Dialog Title
-        alertDialog.setMessage(message); // Setting Dialog Message
-        // Setting OK Button
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", (dialog, which) -> {
-            NavDirections action = CardsTrainingFragmentDirections.actionCardsTrainingToCards();
-            Navigation.findNavController(requireView()).navigate(action);
-        });
-        // Setting Cancel button
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", (dialog, which) -> alertDialog.dismiss());
-        alertDialog.show(); // Showing Alert Message
-    }
-
-    private void setupChallenge( boolean fillInTask, String timeOutTitle){
-
+    /** Method setting up timer according to preferences. */
+    private void setupChallenge(String timeOutTitle){
         SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(requireContext());
-
-        // Setup challenge
-        if (fillInTask) {
-            String size = sharedPreferences.getString(getString(R.string.cards_size_key), getString(R.string.cards_size_default));
-            CardsGenerator generator = new CardsGenerator();
-            Cards challenge = generator.generateSequence(Integer.parseInt(size));
-            CardContent.loadCards(this.getContext(), challenge, true);
-        }
+                .getDefaultSharedPreferences(requireActivity());
 
         // Setup timer
         String time;
@@ -164,11 +204,18 @@ public class CardsTrainingFragment extends Fragment {
         } else {
             time = sharedPreferences.getString(getString(R.string.cards_answer_key), getString(R.string.cards_answer_default));
         }
-        long timeMs = Math.round(Float.parseFloat(time)*60*1000);
+        long timeMs;
+        if (viewModel.getRemainingTime().getValue() == null) {
+            timeMs = Math.round(Float.parseFloat(time)*60*1000);
+        } else {
+            timeMs = viewModel.getRemainingTime().getValue();
+        }
+
         Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
         timer = new CountDownTimer( timeMs, 1000) {
 
             public void onTick(long millisUntilFinished) {
+                viewModel.setRemainingTime(millisUntilFinished);
                 SpannableString firstPart = new SpannableString(timeOutTitle);
                 long seconds = (millisUntilFinished / 1000) % 60;
                 long minutes = (millisUntilFinished / (60*1000)) % 60;
@@ -176,15 +223,17 @@ public class CardsTrainingFragment extends Fragment {
                 String time =
                         String.format(Locale.US,"%02d:%02d:%02d", hours, minutes, seconds);
                 SpannableString lastPart = new SpannableString(time);
-                firstPart.setSpan(
-                        new ForegroundColorSpan(
-                                ContextCompat.getColor(requireContext(), R.color.white)),
-                        0, firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                lastPart.setSpan(
-                        new ForegroundColorSpan(
-                                ContextCompat.getColor(requireContext(), R.color.red)),
-                        0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                toolbar.setTitle(TextUtils.concat(firstPart, lastPart));
+                if (isAdded()){
+                    firstPart.setSpan(
+                            new ForegroundColorSpan(
+                                    ContextCompat.getColor(requireActivity(), R.color.white)),
+                            0, firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    lastPart.setSpan(
+                            new ForegroundColorSpan(
+                                    ContextCompat.getColor(requireActivity(), R.color.red)),
+                            0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    toolbar.setTitle(TextUtils.concat(firstPart, lastPart));
+                }
             }
 
             public void onFinish() { exitFunction(); }
@@ -192,30 +241,16 @@ public class CardsTrainingFragment extends Fragment {
         timer.start();
     }
 
+    /** Method showing results from memorization practice. */
     private void showResults() {
-        String itemName;
-        Card taskResult = null, answerResult = null;
+        Card taskResult, answerResult;
         correctCount = 0; // correct
         List<CardContent.CardItem> items = recyclerViewAdapter.getItems();
-        for(CardContent.CardItem item : items){
-            itemName = item.cardName.toString();
-            for(int i=0; i < taskContent.getCards().size(); i++){
-                taskResult = taskContent.getCards().get(i);
-                String resultName = taskResult.getName();
-                if (itemName.equals(resultName)){
-                    break;
-                }
-            }
-            for(int i=0; i < answers.getCards().size(); i++){
-                answerResult = answers.getCards().get(i);
-                if (answerResult.getPicture() == taskResult.getPicture()){
-                    break;
-                }
-            }
-            if (answerResult.getName().equals(taskResult.getName())){
-                correctCount++;
-            }
-            item.cardName = getColoredAnswer(taskResult.getName(),
+        for (int i=0; i < items.size(); i++){
+            taskResult = taskContent.getCards().get(i);
+            answerResult = answers.getCards().get(i);
+            items.get(i).cardName = getColoredAnswer(
+                    taskResult.getName(),
                     answerResult.getName());
             recyclerViewAdapter.notifyDataSetChanged();
             Log.d("TEST", taskResult.getName() + " -> " + answerResult.getName() );
@@ -226,67 +261,83 @@ public class CardsTrainingFragment extends Fragment {
         viewModel.setButtonText("Back to cards stats");
 
         SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(requireContext());
+                .getDefaultSharedPreferences(requireActivity());
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(getString(R.string.last_challenge_key), getString(R.string.challenge_cards));
+        editor.putString(getString(R.string.last_challenge_key),
+                getString(R.string.challenge_cards));
         editor.apply();
         editor.commit();
 
-        ResultViewModel mResultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
+        ResultViewModel mResultViewModel = new ViewModelProvider(this)
+                .get(ResultViewModel.class);
         mResultViewModel.update("cards", correctCount, taskContent.getCards().size());
         mResultViewModel.leaveOnlyOneBestOfTheDay("cards");
     }
 
+    /** Coloring correct answers, bad answers and no answers. */
     private SpannableStringBuilder getColoredAnswer(String task, String answer){
-        int i;
-        boolean correct = true;
-        SpannableString letter;
-        SpannableStringBuilder evaluatedText = new SpannableStringBuilder("");
-        for (i=0; i < task.length(); i++){
-            if (i < answer.length()){
-                if (answer.charAt(i) == task.charAt(i)){
-                    letter = new SpannableString(Character.toString(task.charAt(i)));
-                    letter.setSpan(new ForegroundColorSpan(Color.BLUE), 0, 1,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                } else {
-                    letter = new SpannableString(Character.toString(task.charAt(i)));
-                    letter.setSpan(new ForegroundColorSpan(Color.RED), 0, 1,
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    correct = false;
-                }
-            } else {
-                letter = new SpannableString(Character.toString(task.charAt(i)));
-                letter.setSpan(new ForegroundColorSpan(Color.GRAY), 0, 1,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                correct =false;
-            }
-            evaluatedText.append(letter);
+        SpannableStringBuilder evaluatedText;
+        if (answer == null || answer.length() == 0){
+            String text = "No answer";
+            evaluatedText = new SpannableStringBuilder(text);
+            evaluatedText.setSpan(new ForegroundColorSpan(Color.GRAY), 0, text.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } else if (task.equals(answer)){
+            evaluatedText = new SpannableStringBuilder(answer);
+            evaluatedText.setSpan(new ForegroundColorSpan(Color.BLUE), 0, answer.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            correctCount++;
+        } else {
+            evaluatedText = new SpannableStringBuilder(answer);
+            evaluatedText.setSpan(new ForegroundColorSpan(Color.RED), 0, answer.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        if (correct) correctCount++;
         return evaluatedText;
     }
 
+    /** Method changing redirect back to show a warning dialog. */
     private void redirectBack() {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                showAlertDialog(getContext(), "Training in progress",
+                showAlertDialog(getActivity(), "Training in progress",
                         "Do you really wish to stop your Training?");
             }
         };
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+        requireActivity().getOnBackPressedDispatcher()
+                .addCallback(getViewLifecycleOwner(), callback);
     }
 
+    /** Method showing dialog to caution user against returning. */
+    public void showAlertDialog(Context context, String title, String message) {
+        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setTitle(title); // Setting Dialog Title
+        alertDialog.setMessage(message); // Setting Dialog Message
+        // Setting OK Button
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", (dialog, which) -> {
+            NavDirections action = CardsTrainingFragmentDirections.actionCardsTrainingToCards();
+            Navigation.findNavController(requireView()).navigate(action);
+        });
+        // Setting Cancel button
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL",
+                (dialog, which) -> alertDialog.dismiss());
+        alertDialog.show(); // Showing Alert Message
+    }
+
+    /** Method deciding on next fragment according to current mode and user action/timer. */
     private void exitFunction() {
+        Log.d("CTF","exitFunction with mode: " + mode);
         switch (mode) {
             case TASK:
                 exitAction = CardsTrainingFragmentDirections.actionCardsTrainingToWaiting();
+                ((CardsTrainingFragmentDirections.ActionCardsTrainingToWaiting) exitAction)
+                        .setMode(RECOLLECTION);
                 ((CardsTrainingFragmentDirections.ActionCardsTrainingToWaiting) exitAction)
                         .setChallengeType("cards");
                 ((CardsTrainingFragmentDirections.ActionCardsTrainingToWaiting) exitAction)
                         .setCardsTaskContent(taskContent);
                 break;
-            case "recollection":
+            case RECOLLECTION:
                 exitAction = CardsTrainingFragmentDirections.actionCardsTrainingSelf();
                 ((CardsTrainingFragmentDirections.ActionCardsTrainingSelf) exitAction)
                         .setMode(RESULTS);
@@ -297,36 +348,34 @@ public class CardsTrainingFragment extends Fragment {
                 break;
             case RESULTS:
                 exitAction = CardsTrainingFragmentDirections.actionCardsTrainingToCards();
-                recyclerViewAdapter.clearItems(getContext());
+                recyclerViewAdapter.clearItems(getActivity());
         }
-        Navigation.findNavController(requireView()).navigate(exitAction);
+        if (isAdded()) {
+            Navigation.findNavController(requireView()).navigate(exitAction);
+        }
     }
 
+    /** Method retrieving user's answers from recycler view. */
     private Cards retrieveAnswers(){
-        String title, itemName;
-        String[] guessedName;
-        Card res = null;
         List<CardContent.CardItem> items = recyclerViewAdapter.getItems();
         Cards answers = new Cards(new ArrayList<>());
-        for(CardContent.CardItem item : items){
-            itemName = item.cardName.toString();
-            for(int i=0; i < taskContent.getCards().size(); i++){
-                res = taskContent.getCards().get(i);
-                String resultName = res.getName();
-                if (itemName.equals(resultName)){
-                    break;
-                }
-            }
-
-            title =  item.cardName.toString();
-            answers.getCards().add(new Card(res.getName(),res.getPicture()));
+        for(int i=0; i < items.size(); i++){
+            Log.d("CTF", "Retrieving " + items.get(i).cardName.toString() + "," +
+                    taskContent.getCards().get(i).getPicture());
+            answers.getCards().add(
+                    new Card(
+                            items.get(i).cardName.toString(),
+                            taskContent.getCards().get(i).getPicture()
+                    )
+            );
         }
         return answers;
     }
 
+    /** Method changing descriptions to explain how results are shown. */
     private void setDescription(){
         TypedValue typedValue = new TypedValue();
-        requireContext().getTheme()
+        requireActivity().getTheme()
                 .resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
         @ColorInt int foregroundColor = typedValue.data;
         String text;
@@ -346,6 +395,7 @@ public class CardsTrainingFragment extends Fragment {
         viewModel.setDescriptionText(description);
     }
 
+    /** Method coloring text with selected color. */
     private SpannableString colorText(String text, @ColorInt int c){
         SpannableString colorText = new SpannableString(text);
         colorText.setSpan(new ForegroundColorSpan(c), 0, text.length(),
@@ -353,10 +403,11 @@ public class CardsTrainingFragment extends Fragment {
         return colorText;
     }
 
+    /** Method setting up recycler view showing cards. */
     private void setupRecyclerView(){
         // Set the adapter
         if (recyclerViewAdapter == null) {
-            View view = binding.getRoot().findViewById(R.id.face_list);
+            View view = binding.getRoot().findViewById(R.id.card_list);
             if (view instanceof RecyclerView) {
                 Context context = view.getContext();
                 RecyclerView recyclerView = (RecyclerView) view;
@@ -365,8 +416,8 @@ public class CardsTrainingFragment extends Fragment {
                         new CardListRecyclerViewAdapter(
                                 CardContent.ITEMS, mode.equals("recollection")));
                 recyclerViewAdapter = (CardListRecyclerViewAdapter) recyclerView.getAdapter();
-                if (mode.equals(TASK)) {
-                    recyclerViewAdapter.clearItems(getContext());
+                if (mode.equals(TASK) && recyclerViewAdapter != null) {
+                    recyclerViewAdapter.clearItems(getActivity());
                 }
             }
         }

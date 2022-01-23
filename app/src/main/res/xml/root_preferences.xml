@@ -1,105 +1,160 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/binary_title">
+    <PreferenceCategory
+        android:icon="@drawable/ic_binary_numbers"
+        app:title="@string/binary_title"
+        android:layout="@layout/settings_category">
         <EditTextPreference
             android:defaultValue="@string/binary_size_default"
             android:inputType="numberDecimal"
             android:key="@string/binary_size_key"
             android:persistent="true"
-            android:title="@string/binary_size_title" />
+            android:title="@string/binary_size_title"
+            android:layout="@layout/settings_item"/>
         <EditTextPreference
             android:defaultValue="@string/binary_time_default"
             android:inputType="numberDecimal"
             android:key="@string/binary_time_key"
             android:persistent="true"
-            android:title="@string/binary_time_title" />
+            android:title="@string/binary_time_title"
+            android:layout="@layout/settings_item"/>
         <EditTextPreference
             android:defaultValue="@string/binary_wait_default"
             android:inputType="numberDecimal"
             android:key="@string/binary_wait_key"
             android:persistent="true"
-            android:title="@string/binary_wait_title" />
+            android:title="@string/binary_wait_title"
+            android:layout="@layout/settings_item"/>
         <EditTextPreference
             android:defaultValue="@string/binary_answer_default"
             android:inputType="numberDecimal"
             android:key="@string/binary_answer_key"
             android:persistent="true"
-            android:title="@string/binary_answer_title" />
+            android:title="@string/binary_answer_title"
+            android:layout="@layout/settings_item"/>
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/numbers_title">
+    <PreferenceCategory
+        android:icon="@drawable/ic_numbers"
+        app:title="@string/numbers_title"
+        android:layout="@layout/settings_category">
         <EditTextPreference
             android:defaultValue="@string/numbers_size_default"
             android:inputType="numberDecimal"
             android:key="@string/numbers_size_key"
             android:persistent="true"
-            android:title="@string/numbers_size_title" />
+            android:title="@string/numbers_size_title"
+            android:layout="@layout/settings_item"/>
         <EditTextPreference
             android:defaultValue="@string/numbers_time_default"
             android:inputType="numberDecimal"
             android:key="@string/numbers_time_key"
             android:persistent="true"
-            android:title="@string/numbers_time_title" />
+            android:title="@string/numbers_time_title"
+            android:layout="@layout/settings_item"/>
         <EditTextPreference
             android:defaultValue="@string/numbers_wait_default"
             android:inputType="numberDecimal"
             android:key="@string/numbers_wait_key"
             android:persistent="true"
-            android:title="@string/numbers_wait_title" />
+            android:title="@string/numbers_wait_title"
+            android:layout="@layout/settings_item"/>
         <EditTextPreference
             android:defaultValue="@string/numbers_answer_default"
             android:inputType="numberDecimal"
             android:key="@string/numbers_answer_key"
             android:persistent="true"
-            android:title="@string/numbers_answer_title" />
+            android:title="@string/numbers_answer_title"
+            android:layout="@layout/settings_item"/>
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/faces_title">
+    <PreferenceCategory
+        android:icon="@drawable/ic_faces"
+        app:title="@string/faces_title"
+        android:layout="@layout/settings_category">
         <EditTextPreference
             android:defaultValue="@string/faces_size_default"
             android:inputType="numberDecimal"
             android:key="@string/faces_size_key"
             android:persistent="true"
-            android:title="@string/faces_size_title" />
+            android:title="@string/faces_size_title"
+            android:layout="@layout/settings_item"/>
         <EditTextPreference
             android:defaultValue="@string/faces_time_default"
             android:inputType="numberDecimal"
             android:key="@string/faces_time_key"
             android:persistent="true"
-            android:title="@string/faces_time_title" />
+            android:title="@string/faces_time_title"
+            android:layout="@layout/settings_item"/>
         <EditTextPreference
             android:defaultValue="@string/faces_wait_default"
             android:inputType="numberDecimal"
             android:key="@string/faces_wait_key"
             android:persistent="true"
-            android:title="@string/faces_wait_title" />
+            android:title="@string/faces_wait_title"
+            android:layout="@layout/settings_item"/>
         <EditTextPreference
             android:defaultValue="@string/faces_answer_default"
             android:inputType="numberDecimal"
             android:key="@string/faces_answer_key"
             android:persistent="true"
-            android:title="@string/faces_answer_title" />
+            android:title="@string/faces_answer_title"
+            android:layout="@layout/settings_item"/>
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/sync_header">
+    <PreferenceCategory
+        android:icon="@drawable/ic_cards"
+        app:title="@string/cards_title"
+        android:layout="@layout/settings_category">
+        <EditTextPreference
+            android:defaultValue="@string/cards_size_default"
+            android:inputType="numberDecimal"
+            android:key="@string/cards_size_key"
+            android:persistent="true"
+            android:title="@string/cards_size_title"
+            android:layout="@layout/settings_item"/>
+        <EditTextPreference
+            android:defaultValue="@string/cards_time_default"
+            android:inputType="numberDecimal"
+            android:key="@string/cards_time_key"
+            android:persistent="true"
+            android:title="@string/cards_time_title"
+            android:layout="@layout/settings_item"/>
+        <EditTextPreference
+            android:defaultValue="@string/cards_wait_default"
+            android:inputType="numberDecimal"
+            android:key="@string/cards_wait_key"
+            android:persistent="true"
+            android:title="@string/cards_wait_title"
+            android:layout="@layout/settings_item"/>
+        <EditTextPreference
+            android:defaultValue="@string/cards_answer_default"
+            android:inputType="numberDecimal"
+            android:key="@string/cards_answer_key"
+            android:persistent="true"
+            android:title="@string/cards_answer_title"
+            android:layout="@layout/settings_item"/>
+    </PreferenceCategory>
 
+    <PreferenceCategory
+        app:title="@string/sync_header"
+        android:layout="@layout/settings_category">
         <Preference
             android:key="@string/os_key"
             app:summary="@string/os_notices_summary"
             app:title="@string/os_notices"/>
-
         <Preference
             app:summary="@string/about_summary"
             app:title="@string/about" />
-
     </PreferenceCategory>
 
     <Preference
+        android:defaultValue="@string/last_challenge_default"
         android:key="@string/last_challenge_key"
         android:persistent="true"
-        android:defaultValue="@string/last_challenge_default"
+        android:visibility="gone"
         app:enabled="false"
-        app:shouldDisableView="true"/>
+        app:shouldDisableView="true" />
 
 </PreferenceScreen>

@@ -37,7 +37,7 @@
             tools:listitem="@layout/face"
             app:layoutManager="LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toTopOf="@id/end_practice_button"
+            app:layout_constraintBottom_toTopOf="@id/faces_training_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/indeterminateBar"/>

@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobileigation"
+    android:id="@+id/mobile_navigation"
     app:startDestination="@id/splash">
 
     <fragment
@@ -21,7 +21,7 @@
     <fragment
         android:id="@+id/settings"
         android:name="com.example.memorybootcamp.ui.settings.SettingsFragment"
-        android:label="SettingsFragment">
+        android:label="@string/menu_settings">
     </fragment>
 
     <fragment
@@ -59,7 +59,13 @@
             app:destination="@id/settings" />
         <action
             android:id="@+id/action_cards_to_cards_training"
-            app:destination="@id/cards_training" />
+            app:destination="@id/cards_training" >
+            <argument
+                android:name="cards_task_content"
+                app:argType="com.example.memorybootcamp.ui.challenges.cards.Cards"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
     </fragment>
 
     <fragment
@@ -393,6 +399,11 @@
             app:argType="string[]"
             app:nullable="true"
             android:defaultValue="@null"/>
+        <argument
+            android:name="cards_task_content"
+            app:argType="com.example.memorybootcamp.ui.challenges.cards.Cards"
+            app:nullable="true"
+            android:defaultValue="@null"/>
         <action
             android:id="@+id/action_waiting_to_binary"
             app:destination="@id/binary"
@@ -410,6 +421,12 @@
             app:destination="@id/faces"
             app:launchSingleTop="true"
             app:popUpTo="@id/faces"
+            app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_waiting_to_cards"
+            app:destination="@id/cards"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/cards"
             app:popUpToInclusive="true"/>
         <action
             android:id="@+id/action_waiting_to_binary_training"
@@ -455,6 +472,22 @@
             <argument
                 android:name="task_content"
                 app:argType="string[]"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+        </action>
+        <action
+            android:id="@+id/action_waiting_to_cards_training"
+            app:destination="@id/cards_training"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/cards_training"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="mode"
+                app:argType="string"
+                android:defaultValue="recollection" />
+            <argument
+                android:name="task_content"
+                app:argType="com.example.memorybootcamp.ui.challenges.cards.Cards"
                 app:nullable="true"
                 android:defaultValue="@null"/>
         </action>

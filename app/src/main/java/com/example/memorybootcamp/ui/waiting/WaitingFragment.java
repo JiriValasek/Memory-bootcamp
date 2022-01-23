@@ -31,15 +31,26 @@ import com.example.memorybootcamp.R;
 import com.example.memorybootcamp.databinding.FragmentWaitingBinding;
 
 import java.util.Locale;
+import java.util.Objects;
 
+/** Fragment for waiting between card memorization and recollection. */
 public class WaitingFragment extends Fragment {
 
+    /** Fragment mode for filling in memorized information. */
+    public static final String RECOLLECTION = "recollection";
+
+    /** Data binding for the layout. */
     private FragmentWaitingBinding binding;
+    /** View model for maintaining data between restarts etc. */
     private WaitingViewModel viewModel;
+    /** Count-down timer for memorization and recollection. */
     private CountDownTimer timer;
+
     private long timeMs;
+    /** Action to be executed after time is out or return button is pressed. */
     private NavDirections actionReturn, actionTimeout;
 
+    /** "onAttach" adding back press callback. */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -59,18 +70,20 @@ public class WaitingFragment extends Fragment {
         binding = FragmentWaitingBinding.inflate(inflater, container, false);
         binding.setViewModel(viewModel);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().hide(); // disable going back and settings
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
+                .hide(); // disable going back and settings
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(requireContext());
         String type = WaitingFragmentArgs.fromBundle(getArguments()).getChallengeType();
         TypedValue typedValue = new TypedValue();
-        getContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
+        requireContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
         @ColorInt int foregroundColor = typedValue.data;
         Drawable icon;
         String time;
         switch (type) {
             case "binary":
-                icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_binary_numbers);
-                icon.setTint(foregroundColor);
+                icon = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_binary_numbers);
+                if (icon != null) icon.setTint(foregroundColor);
                 viewModel.setWaitingIcon(icon);
                 time = sharedPreferences.getString(getString(R.string.binary_wait_key),
                         getString(R.string.binary_wait_default));
@@ -78,19 +91,29 @@ public class WaitingFragment extends Fragment {
                 actionReturn = WaitingFragmentDirections.actionWaitingToBinary();
                 actionTimeout = WaitingFragmentDirections.actionWaitingToBinaryTraining();
                 ((WaitingFragmentDirections.ActionWaitingToBinaryTraining) actionTimeout)
-                        .setMode("recollection");
+                        .setMode(RECOLLECTION);
                 ((WaitingFragmentDirections.ActionWaitingToBinaryTraining) actionTimeout)
                         .setTaskContent(WaitingFragmentArgs.fromBundle(getArguments())
                                 .getBinaryTaskContent());
                 break;
             case "cards":
-                icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_cards);
-                icon.setTint(foregroundColor);
+                icon = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_cards);
+                if (icon != null) icon.setTint(foregroundColor);
                 viewModel.setWaitingIcon(icon);
+                time = sharedPreferences.getString(getString(R.string.cards_wait_key),
+                        getString(R.string.cards_wait_default));
+                timeMs = Math.round(Float.parseFloat(time)*60*1000);
+                actionReturn = WaitingFragmentDirections.actionWaitingToCards();
+                actionTimeout = WaitingFragmentDirections.actionWaitingToCardsTraining();
+                ((WaitingFragmentDirections.ActionWaitingToCardsTraining) actionTimeout)
+                        .setMode(RECOLLECTION);
+                ((WaitingFragmentDirections.ActionWaitingToCardsTraining) actionTimeout)
+                        .setTaskContent(WaitingFragmentArgs.fromBundle(getArguments())
+                                .getCardsTaskContent());
                 break;
             case "faces":
-                icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_faces);
-                icon.setTint(foregroundColor);
+                icon = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_faces);
+                if (icon != null) icon.setTint(foregroundColor);
                 viewModel.setWaitingIcon(icon);
                 time = sharedPreferences.getString(getString(R.string.faces_wait_key),
                         getString(R.string.faces_wait_default));
@@ -98,14 +121,14 @@ public class WaitingFragment extends Fragment {
                 actionReturn = WaitingFragmentDirections.actionWaitingToFaces();
                 actionTimeout = WaitingFragmentDirections.actionWaitingToFacesTraining();
                 ((WaitingFragmentDirections.ActionWaitingToFacesTraining) actionTimeout)
-                        .setMode("recollection");
+                        .setMode(RECOLLECTION);
                 ((WaitingFragmentDirections.ActionWaitingToFacesTraining) actionTimeout)
                         .setTaskContent(WaitingFragmentArgs.fromBundle(getArguments())
                                 .getFacesTaskContent());
                 break;
             case "numbers":
-                icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_numbers);
-                icon.setTint(foregroundColor);
+                icon = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_numbers);
+                if (icon != null) icon.setTint(foregroundColor);
                 viewModel.setWaitingIcon(icon);
                 time = sharedPreferences.getString(getString(R.string.numbers_wait_key),
                         getString(R.string.numbers_wait_default));
@@ -113,14 +136,14 @@ public class WaitingFragment extends Fragment {
                 actionReturn = WaitingFragmentDirections.actionWaitingToNumbers();
                 actionTimeout = WaitingFragmentDirections.actionWaitingToNumbersTraining();
                 ((WaitingFragmentDirections.ActionWaitingToNumbersTraining) actionTimeout)
-                        .setMode("recollection");
+                        .setMode(RECOLLECTION);
                 ((WaitingFragmentDirections.ActionWaitingToNumbersTraining) actionTimeout)
                         .setTaskContent(WaitingFragmentArgs.fromBundle(getArguments())
                                 .getNumbersTaskContent());
                 break;
             case "words":
-                icon = ContextCompat.getDrawable(getActivity(), R.drawable.ic_words);
-                icon.setTint(foregroundColor);
+                icon = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_words);
+                if (icon != null) icon.setTint(foregroundColor);
                 viewModel.setWaitingIcon(icon);
                 break;
             default:
@@ -144,7 +167,7 @@ public class WaitingFragment extends Fragment {
         alertDialog.setMessage(message); // Setting Dialog Message
         // Setting OK Button
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
-                (dialog, which) -> Navigation.findNavController(getView()).navigate(actionReturn));
+                (dialog, which) -> Navigation.findNavController(requireView()).navigate(actionReturn));
         // Setting Cancel button
         alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", (dialog, which) -> alertDialog.dismiss());
         alertDialog.show(); // Showing Alert Message
@@ -154,7 +177,8 @@ public class WaitingFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().show();
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar())
+                .show();
         timer.cancel();
         binding = null;
     }
@@ -170,17 +194,17 @@ public class WaitingFragment extends Fragment {
                 String time = String.format(Locale.US,"%02d:%02d:%02d", hours, minutes, seconds);
                 SpannableString lastPart = new SpannableString(time);
                 TypedValue typedValue = new TypedValue();
-                getContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
+                requireContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
                 @ColorInt int foregroundColor = typedValue.data;
                 firstPart.setSpan(new ForegroundColorSpan(foregroundColor), 0, firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                lastPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.red)), 0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                lastPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.red)), 0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 binding.waitingText.setText(TextUtils.concat(firstPart, lastPart));
                 binding.waitingProgress.setProgress(Math.round(100*((float)timeMs - millisUntilFinished)/timeMs));
             }
 
             public void onFinish() {
                 binding.waitingProgress.setProgress(100);
-                Navigation.findNavController(getView()).navigate(actionTimeout);
+                Navigation.findNavController(requireView()).navigate(actionTimeout);
             }
         };
         timer.start();

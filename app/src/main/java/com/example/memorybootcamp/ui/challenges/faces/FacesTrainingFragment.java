@@ -424,8 +424,7 @@ public class FacesTrainingFragment extends Fragment {
                         new FaceListRecyclerViewAdapter(
                                 FaceContent.ITEMS, mode.equals("recollection")));
                 recyclerViewAdapter = (FaceListRecyclerViewAdapter) recyclerView.getAdapter();
-                if (mode.equals(TASK)) {
-                    assert recyclerViewAdapter != null;
+                if (mode.equals(TASK) && recyclerViewAdapter != null) {
                     recyclerViewAdapter.clearItems(getContext());
                 }
             }

@@ -16,6 +16,7 @@ import androidx.preference.PreferenceManager;
 
 import com.example.memorybootcamp.R;
 import com.example.memorybootcamp.charts.ProgressLineChart;
+import com.example.memorybootcamp.database.ResultViewModel;
 import com.example.memorybootcamp.databinding.FragmentChallengeBinding;
 import com.example.memorybootcamp.web.faceretrival.FaceRetriever;
 import com.example.memorybootcamp.web.faceretrival.Faces;
@@ -30,6 +31,7 @@ import retrofit2.Response;
 public class FacesFragment extends Fragment implements Callback<Faces> {
     private FragmentChallengeBinding binding;
     private FacesViewModel viewModel;
+    private ResultViewModel mResultViewModel;
     private ProgressLineChart chart;
     private static final int TOTAL_RETRIES = 3;
     private int retryCount = 0;
@@ -42,6 +44,8 @@ public class FacesFragment extends Fragment implements Callback<Faces> {
         viewModel.setHeader(requireActivity().getString(R.string.faces_challenge_header));
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
+
+        mResultViewModel = new ViewModelProvider(this).get(ResultViewModel.class);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         String size = sharedPreferences.getString(getString(R.string.faces_size_key), getString(R.string.faces_size_default));
@@ -63,9 +67,11 @@ public class FacesFragment extends Fragment implements Callback<Faces> {
             Navigation.findNavController(requireView()).navigate(action);
         });
 
-        // Setup graph
+        // Setup graph from mResultViewModel
         LineChart lineChart = binding.progressChart;
         chart = new ProgressLineChart(lineChart);
+        mResultViewModel.getFacesResults().observe(getViewLifecycleOwner(),
+                results -> chart.updateValues(results));
     }
 
     @Override

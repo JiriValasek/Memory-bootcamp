@@ -37,54 +37,72 @@ import com.example.memorybootcamp.generators.NumberGenerator;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 public class NumbersTrainingFragment extends Fragment {
 
+    /** Fragment mode for showing results. */
+    private static final String RESULTS = "results";
+    /** Fragment mode for memorization. */
+    private static final String TASK = "task";
+    /** Fragment mode for filling in memorized information. */
+    private static final String RECOLLECTION = "recollection";
+
+    /** Data binding for the layout. */
     private FragmentNumbersTrainingBinding binding;
+    /** View model for maintaining data between restarts etc. */
     private NumbersTrainingViewModel viewModel;
+    /** Count-down timer for memorization and recollection. */
     private CountDownTimer timer;
+    /** Action to be executed after time is out. */
     private NavDirections exitAction;
+    /** Mode in which the fragment is. */
     private String mode;
+    /** Cards shown during the memorization, and recollected answers. */
     private String[] taskContent, answers;
+    /** Number of correct results. */
     private int correctCount;
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-    }
-
+    /**
+     * "onCreateView" setting up a fragment, starting timer, changing redirect back,
+     * changing button text and hiding settings button.
+     */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        // adding view binding
         viewModel = new ViewModelProvider(this).get(NumbersTrainingViewModel.class);
+        // setting up data binding
         binding = FragmentNumbersTrainingBinding.inflate(inflater, container, false);
         binding.setViewModel(viewModel);
         binding.setLifecycleOwner(this);
-
-        // get arguments
+        // get arguments from previous fragment
         mode = NumbersTrainingFragmentArgs.fromBundle(getArguments()).getMode();
-        prepareTextEdit(mode.equals("recollection"));
+        prepareTextEdit(mode.equals(RECOLLECTION));
         switch (mode) {
-            case "task":
-                setupChallenge(mode.equals("task"), "Memorize in: ");
+            case TASK:
+                setupChallenge(true, "Memorize in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
                 break;
-            case "recollection":
-                taskContent = NumbersTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
-                setupChallenge(mode.equals("task"), "Answer in: ");
+            case RECOLLECTION:
+                taskContent = NumbersTrainingFragmentArgs
+                        .fromBundle(getArguments()).getTaskContent();
+                setupChallenge(false, "Answer in: ");
                 redirectBack();
                 viewModel.setButtonText("I am already finished");
                 break;
-            case "results":
-                taskContent = NumbersTrainingFragmentArgs.fromBundle(getArguments()).getTaskContent();
+            case RESULTS:
+                taskContent = NumbersTrainingFragmentArgs
+                        .fromBundle(getArguments()).getTaskContent();
                 answers = NumbersTrainingFragmentArgs.fromBundle(getArguments()).getAnswers();
                 processResults();
                 break;
         }
-
         // disable going back and settings
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        View view = getActivity().findViewById(R.id.action_settings);
+        ((AppCompatActivity)requireActivity()).getSupportActionBar()
+                .setDisplayHomeAsUpEnabled(false);
+        // hide settings button
+        View view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.GONE);
 
         return binding.getRoot();
@@ -100,9 +118,10 @@ public class NumbersTrainingFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity)requireActivity()).getSupportActionBar()
+                .setDisplayHomeAsUpEnabled(true);
         // return settings button
-        View view = getActivity().findViewById(R.id.action_settings);
+        View view = requireActivity().findViewById(R.id.action_settings);
         if (view != null) view.setVisibility(View.VISIBLE);
         if (timer != null) timer.cancel();
         binding = null;
@@ -114,16 +133,19 @@ public class NumbersTrainingFragment extends Fragment {
         alertDialog.setMessage(message); // Setting Dialog Message
         // Setting OK Button
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", (dialog, which) -> {
-            NavDirections action = NumbersTrainingFragmentDirections.actionNumbersTrainingToNumbers();
-            Navigation.findNavController(getView()).navigate(action);
+            NavDirections action = NumbersTrainingFragmentDirections
+                    .actionNumbersTrainingToNumbers();
+            Navigation.findNavController(requireView()).navigate(action);
         });
         // Setting Cancel button
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL", (dialog, which) -> alertDialog.dismiss());
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CANCEL",
+                (dialog, which) -> alertDialog.dismiss());
         alertDialog.show(); // Showing Alert Message
     }
 
     private void setupChallenge( boolean fillInTask, String timeOutTitle){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(requireContext());
 
         // Setup challenge
         if (fillInTask) {
@@ -139,7 +161,7 @@ public class NumbersTrainingFragment extends Fragment {
 
         // Setup timer
         String time;
-        if (mode.equals("task")) {
+        if (mode.equals(TASK)) {
             time = sharedPreferences.getString(getString(R.string.numbers_time_key),
                     getString(R.string.numbers_time_default));
         } else {
@@ -147,7 +169,7 @@ public class NumbersTrainingFragment extends Fragment {
                     getString(R.string.numbers_answer_default));
         }
         long timeMs = Math.round(Float.parseFloat(time)*60*1000);
-        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
         timer = new CountDownTimer( timeMs, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -157,8 +179,12 @@ public class NumbersTrainingFragment extends Fragment {
                 long hours = (millisUntilFinished / (60*60*1000));
                 String time = String.format(Locale.US,"%02d:%02d:%02d", hours, minutes, seconds);
                 SpannableString lastPart = new SpannableString(time);
-                firstPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.white)), 0, firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                lastPart.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.red)), 0, lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                firstPart.setSpan(new ForegroundColorSpan(
+                        ContextCompat.getColor(requireContext(), R.color.white)), 0,
+                        firstPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                lastPart.setSpan(new ForegroundColorSpan(
+                        ContextCompat.getColor(requireContext(), R.color.red)), 0,
+                        lastPart.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 toolbar.setTitle(TextUtils.concat(firstPart, lastPart));
             }
 
@@ -191,13 +217,14 @@ public class NumbersTrainingFragment extends Fragment {
             evaluatedText.append(letter);
         }
         viewModel.setChallengeText(evaluatedText);
-        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+        Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Your Results");
         setDescription();
         viewModel.setButtonText("Back to numbers stats");
 
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(requireContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(getString(R.string.last_challenge_key), getString(R.string.challenge_numbers));
         editor.apply();
@@ -231,7 +258,7 @@ public class NumbersTrainingFragment extends Fragment {
 
     private void exitFunction() {
         switch (mode) {
-            case "task":
+            case TASK:
                 exitAction = NumbersTrainingFragmentDirections.actionNumbersTrainingToWaiting();
                 ((NumbersTrainingFragmentDirections.ActionNumbersTrainingToWaiting) exitAction)
                         .setChallengeType("numbers");
@@ -239,26 +266,26 @@ public class NumbersTrainingFragment extends Fragment {
                 ((NumbersTrainingFragmentDirections.ActionNumbersTrainingToWaiting) exitAction)
                         .setNumbersTaskContent(task);
                 break;
-            case "recollection":
+            case RECOLLECTION:
 
                 exitAction = NumbersTrainingFragmentDirections.actionNumbersTrainingSelf();
                 String[] answer = {String.valueOf(binding.challengeText.getText())};
                 ((NumbersTrainingFragmentDirections.ActionNumbersTrainingSelf) exitAction)
-                        .setMode("results");
+                        .setMode(RESULTS);
                 ((NumbersTrainingFragmentDirections.ActionNumbersTrainingSelf) exitAction)
                         .setAnswers(answer);
                 ((NumbersTrainingFragmentDirections.ActionNumbersTrainingSelf) exitAction)
                         .setTaskContent(taskContent);
                 break;
-            case "results":
+            case RESULTS:
                 exitAction = NumbersTrainingFragmentDirections.actionNumbersTrainingToNumbers();
         }
-        Navigation.findNavController(getView()).navigate(exitAction);
+        Navigation.findNavController(requireView()).navigate(exitAction);
     }
 
     private void setDescription(){
         TypedValue typedValue = new TypedValue();
-        getContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
+        requireContext().getTheme().resolveAttribute(R.attr.colorOnSecondary, typedValue, true);
         @ColorInt int foregroundColor = typedValue.data;
         SpannableStringBuilder description = new SpannableStringBuilder();
         SpannableString text = new SpannableString("These are ");

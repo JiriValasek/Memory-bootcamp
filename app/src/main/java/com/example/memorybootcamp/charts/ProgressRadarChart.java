@@ -2,6 +2,7 @@ package com.example.memorybootcamp.charts;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
@@ -37,10 +38,10 @@ public class ProgressRadarChart {
     private final String BEST_SCORES_LABEL = "bests";
     /** Label for week's best scores. */
     private final String WEEKS_BEST_SCORES_LABEL = "weeksBests";
-    /** Labels for categories. */
-    private final String[] categories = {"Cards", "Numbers", "Faces", "Binary\nNumbers", "Words"};
+    /** Labels for categories, order according to ResultDAO query. */
+    private final String[] categories = {"Words", "Faces", "Numbers", "Binary\nNumbers", "Cards"};
     /** Y-axis maximum as coefficient of maximal achieved score regardless of a challenge type. */
-    private final float maximumScoreToYAxisMaximum = 1.1f;
+    private final float MAXIMUM_SCORE_TO_YAXIS_MAXIMUM = 1f;
 
     /** Constructor */
     public ProgressRadarChart(RadarChart radarChart){
@@ -120,7 +121,6 @@ public class ProgressRadarChart {
         // plot
         chart.setData(data);
         chart.getData().setHighlightEnabled(true);
-        chart.invalidate();
     }
 
     /** Initialize colors of the graph. */
@@ -149,6 +149,7 @@ public class ProgressRadarChart {
         chart.getYAxis().setTextColor(yLabelsColor);
         chart.getYAxis().setAxisLineColor(lineColor);
         chart.getYAxis().setGridColor(lineColor);
+        chart.getYAxis().resetAxisMaximum();
         chart.getLegend().setTextColor(lineColor);
         // set colors for plots
         bestDataSet.setColor(bestColor);
@@ -161,16 +162,17 @@ public class ProgressRadarChart {
 
     /** Update best results shown on the graph. */
     public void updateBests(List<ScoreType> scores){
-        YAxis yAxis = chart.getYAxis();
+        chart.getYAxis();
         if (scores.size() == categories.length) {
+            int maxValue = 0;
             for (int i = 0; i < categories.length; i++) {
                 chart.getData().getDataSetByLabel(BEST_SCORES_LABEL, false)
                         .getEntryForIndex(i).setY(scores.get(i).getScore());
-                if (scores.get(i).getScore() > yAxis.getAxisMaximum()){
-                    yAxis.setAxisMaximum(maximumScoreToYAxisMaximum*scores.get(i).getScore());
-                }
+                if (scores.get(i).getScore() > maxValue){ maxValue = scores.get(i).getScore(); }
             }
+            chart.getYAxis().setAxisMaximum(MAXIMUM_SCORE_TO_YAXIS_MAXIMUM*maxValue);
             chart.notifyDataSetChanged();
+
         }
     }
 

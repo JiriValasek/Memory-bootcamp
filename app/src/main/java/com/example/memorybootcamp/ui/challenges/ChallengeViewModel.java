@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+/** View model for all challenges. */
 public class ChallengeViewModel extends ViewModel {
 
     private final MutableLiveData<String> mHeader;
@@ -22,15 +23,9 @@ public class ChallengeViewModel extends ViewModel {
         mStartChallengeAllowed.setValue(false);
     }
 
-    public LiveData<String> getHeader() {
-        return mHeader;
-    }
-    public LiveData<String> getDescription() {
-        return mDescription;
-    }
-    public LiveData<float[][]> getScores() {
-        return mScores;
-    }
+    public LiveData<String> getHeader() { return mHeader; }
+    public LiveData<String> getDescription() { return mDescription; }
+    public LiveData<float[][]> getScores() { return mScores; }
     public LiveData<Boolean> getStartChallengeAllowed(){ return mStartChallengeAllowed; }
 
     public void setHeader(String header){mHeader.setValue(header);}
